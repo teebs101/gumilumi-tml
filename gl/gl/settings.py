@@ -18,6 +18,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
+import os
 
 from pathlib import Path
 
@@ -29,12 +30,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-e-2t=o&%6y84p==4jf707he7^esxa&n6ol6=kv%$(y9m#-46s6"
+SECRET_KEY = os.environ.get("SECRET_KEY", "fallback-secret-key")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "gumilumi-tml.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+
 
 
 # Application definition
