@@ -2,3 +2,4 @@ Django
 gunicorn
 whitenoise
 python-dotenv
+requests
