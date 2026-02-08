@@ -141,7 +141,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles' # Donde se reunirán todos para Render
 
 # Si tienes una carpeta global de static (fuera de las apps)
 STATICFILES_DIRS = [
-    BASE_DIR / "static", 
+    BASE_DIR / "core" / "static", 
 ]
 
 # Esto optimiza el almacenamiento (comprime y cachea)
