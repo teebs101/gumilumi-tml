@@ -475,11 +475,13 @@
                     <p class="font-black text-slate-700 text-lg mb-2">{{ reto_rapido.titulo }}</p>
                     <p class="text-slate-500 text-sm italic leading-relaxed">{{ reto_rapido.descripcion }}</p>
                 </div>
-                <button type="button" 
-                        onclick="iniciarReto('{{ reto_rapido.id }}', '{{ reto_rapido.tipo }}', '{{ reto_rapido.titulo }}', '{{ reto_rapido.descripcion }}', '{{ reto_rapido.opciones_o_respuesta }}')"
-                        class="w-full py-5 bg-white border-4 border-amber-200 text-amber-600 rounded-[2rem] font-black shadow-lg hover:bg-amber-50 transition-all hover:scale-[1.03]">
-                    ACEPTAR RETO (+20 XP)
-                </button>
+                <a href="{% url 'retos' %}" class="block w-full"> 
+                    <button type="button" 
+                            onclick="iniciarReto('{{ reto_rapido.id }}', '{{ reto_rapido.tipo }}', '{{ reto_rapido.titulo }}', '{{ reto_rapido.descripcion }}', '{{ reto_rapido.opciones_o_respuesta }}')"
+                            class="w-full py-5 bg-white border-4 border-amber-200 text-amber-600 rounded-[2rem] font-black shadow-lg hover:bg-amber-50 transition-all hover:scale-[1.03]">
+                        ACEPTAR RETO (+20 XP)
+                    </button>
+                </a>
                 {% else %}
                 <div class="text-center py-10 opacity-50">
                     <span class="material-symbols-outlined !text-6xl text-slate-300 mb-4">wifi_find</span>
