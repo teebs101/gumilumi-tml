@@ -1,0 +1,619 @@
+{% extends 'base/base_private.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard | Gumi & Lumi</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,FILL@1,wght@600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet"/>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#fb7185",
+                        "lumi-blue": "#38bdf8",
+                        "main-dark": "#1e293b",
+                    },
+                    fontFamily: {
+                        display: ["Fredoka", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        /* --- CURSOR MÁGICO --- */
+        /* --- CURSOR DE ESTRELLAS MÁGICAS --- */
+* {
+    cursor: none !important;
+}
+
+        #custom-cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            font-size: 20px; /* Tamaño de la estrella principal */
+            color: {% if user.profile.avatar == 'lumi' %}#38bdf8{% else %}#fb7185{% endif %};
+            text-shadow: 0 0 10px white, 0 0 15px rgba(255,255,255,0.5);
+            line-height: 1;
+            transition: transform 0.1s ease-out, color 0.3s ease;
+            user-select: none;
+            left: -100px;
+        }
+
+        /* Animación de fondo para el rango */
+            @keyframes gradient-shift {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            /* Animación del destello (Shimmer) */
+            @keyframes shimmer-sweep {
+                0% { transform: translateX(-150%) skewX(-20deg); }
+                100% { transform: translateX(150%) skewX(-20deg); }
+            }
+
+            .animate-shimmer {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .animate-shimmer::after {
+                content: "";
+                position: absolute;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                animation: shimmer-sweep 2.5s infinite;
+            }
+
+            .rank-badge-animated {
+                background-size: 200% 200%;
+                animation: gradient-shift 3s ease infinite;
+            }
+
+        #custom-cursor-follower {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            font-size: 14px; /* Estrella seguidora más pequeña */
+            color: {% if user.profile.avatar == 'lumi' %}#bae6fd{% else %}#fecdd3{% endif %};
+            opacity: 0.6;
+            transition: transform 0.2s ease-out;
+            user-select: none;
+            left: -100px;
+        }
+
+        /* EFECTO HOVER: La estrella gira y brilla más, pero no tapa nada */
+        .cursor-hover-star {
+            transform: scale(1.5) rotate(45deg);
+            color: white !important;
+            text-shadow: 0 0 20px white;
+        }
+
+        .follower-hover-star {
+            transform: scale(2) rotate(-45deg);
+            opacity: 1 !important;
+        }
+
+        @layer base {
+            body {
+                @apply bg-[#fff9fb] font-display text-main-dark m-0 p-0 h-screen overflow-hidden;
+            }
+        }
+
+        /* Layout Principal */
+        .dashboard-layout {
+            display: flex; height: 100vh; width: 100%; padding: 1.25rem; gap: 1.5rem; box-sizing: border-box; @apply relative z-10;
+        }
+
+        /* Sidebar Glassmorphism */
+        .sidebar {
+            width: 18rem; flex-shrink: 0; 
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            @apply rounded-[2.5rem] border-4 border-white shadow-xl p-6 h-full transition-all;
+        }
+
+        /* Contenedor Principal */
+        .main-content {
+            flex-grow: 1; height: 100%; overflow-y: auto; 
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            @apply rounded-[3rem] border-4 border-white shadow-2xl p-8 custom-scrollbar;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-rose-200 rounded-full; }
+
+        /* Links de Navegación Animados */
+        .nav-link {
+            @apply flex items-center gap-4 px-5 py-4 rounded-2xl transition-all duration-300 text-slate-500 font-bold mb-2 hover:scale-105;
+        }
+        .nav-link.active { 
+            background: white;
+            @apply text-primary shadow-lg shadow-rose-100;
+        }
+        .nav-link:hover:not(.active) { @apply bg-white/50 text-rose-400; }
+
+        /* Tarjetas Estilo Bubble */
+        .bubbly-card { 
+            background: white;
+            @apply border-4 border-white rounded-[2.5rem] p-6 shadow-xl shadow-slate-200/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl; 
+        }
+
+        .floating-icon {
+            position: absolute;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.2;
+            animation: float-random linear infinite;
+        }
+
+        @keyframes float-random {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, 50px) rotate(10deg); }
+            66% { transform: translate(-20px, 100px) rotate(-10deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .hero-banner {
+            @apply relative mb-12 mt-16 min-h-[250px] rounded-[3.5rem] border-8 border-white shadow-2xl flex items-center;
+            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
+        }
+
+        .character-popout {
+            @apply absolute pointer-events-none;
+            right: 2rem;
+            bottom: -2rem;
+            width: 400px;
+            z-index: 50;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+        }
+
+        @keyframes float-hero {
+            0%, 100% { transform: translateY(0) scale(1.05); }
+            50% { transform: translateY(-20px) scale(1.08); }
+        }
+        .animate-hero { animation: float-hero 5s ease-in-out infinite; }
+
+        .achievement-mini-card {
+            @apply bg-white/60 backdrop-blur-md border-2 border-white p-3 rounded-2xl flex items-center gap-3 transition-all hover:bg-white hover:scale-105;
+        }
+
+        .reliquia-card {
+            @apply relative flex flex-col items-center justify-center p-4 transition-all duration-500;
+            perspective: 1000px;
+        }
+
+        .reliquia-frame {
+            @apply relative size-24 md:size-28 rounded-[2rem] p-[3px] shadow-lg transition-all duration-500;
+            background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            box-shadow: 0 10px 20px -5px rgba(79, 172, 254, 0.4);
+        }
+
+        .reliquia-inner {
+            @apply size-full rounded-[1.8rem] bg-white flex items-center justify-center relative overflow-hidden;
+        }
+
+        .reliquia-card:hover .reliquia-frame {
+            @apply -translate-y-2 scale-110;
+            box-shadow: 0 20px 30px -10px rgba(79, 172, 254, 0.6);
+            transform: rotateY(10deg);
+        }
+
+        .reliquia-locked .reliquia-frame {
+            @apply grayscale opacity-50 shadow-none;
+            background: #e2e8f0;
+        }
+        
+        .reliquia-locked .reliquia-inner {
+            @apply bg-slate-50;
+        }
+
+        .badge-check {
+            @apply absolute -top-2 -right-2 size-7 bg-green-500 border-4 border-white rounded-full 
+                   flex items-center justify-center text-white z-20 shadow-md;
+        }
+
+        .magic-shine {
+            @apply absolute inset-0 opacity-0 transition-opacity duration-500;
+            background: linear-gradient(45deg, transparent 25%, rgba(255,255,255,0.8) 50%, transparent 75%);
+            transform: translateX(-100%);
+        }
+
+        .reliquia-card:hover .magic-shine {
+            animation: shine 1.2s infinite;
+            @apply opacity-100;
+        }
+
+        @keyframes shine {
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+
+<div id="custom-cursor">✦</div>
+<div id="custom-cursor-follower">✧</div>
+
+<div id="magic-background" class="fixed inset-0 pointer-events-none -z-10 bg-[#fff9fb]"></div>
+
+<div class="dashboard-layout">
+    <aside class="sidebar flex flex-col">
+        <div class="flex items-center gap-3 px-2 mb-10">
+            <div class="size-12 bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center rounded-2xl text-white shadow-lg shadow-rose-200">
+                <span class="material-symbols-outlined text-2xl">star</span>
+            </div>
+            <div>
+                <h2 class="text-xl font-black tracking-tight text-slate-800">Mi Panel</h2>
+                <p class="text-[10px] font-black text-rose-400 uppercase tracking-widest">Gumi & Lumi</p>
+            </div>
+        </div>
+
+        <nav class="flex-1">
+            <a href="{% url 'dashboard' %}" class="nav-link active">
+                <span class="material-symbols-outlined">grid_view</span> Inicio
+            </a>
+            <a href="{% url 'courses' %}" class="nav-link">
+                <span class="material-symbols-outlined">import_contacts</span> Mis Cursos
+            </a>
+            <a href="{% url 'logros' %}" class="nav-link">
+                <span class="material-symbols-outlined">workspace_premium</span> Logros
+            </a>
+            <a href="{% url 'chat' %}" class="nav-link">
+                <span class="material-symbols-outlined">forum</span> Chat
+            </a>
+            <a href="{% url 'terminal_libre' %}" class="nav-link">
+                <span class="material-symbols-outlined">terminal</span> Terminal
+            </a>
+            <a href="{% url 'retos' %}" class="nav-link">
+                <span class="material-symbols-outlined">book</span> Retos
+            </a>
+        </nav>
+
+        <div class="relative mt-auto p-1 bg-gradient-to-br from-rose-400 via-pink-500 to-rose-600 rounded-[2rem] shadow-lg shadow-rose-200/50 group overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.4),transparent)] opacity-50"></div>
+    
+    <div class="relative mt-auto p-[2px] rounded-[2.2rem] transition-all duration-500 hover:scale-[1.02] group"
+     style="background: linear-gradient(135deg, {{ user.profile.rango.COLOR|default:'#fb7185' }}, #ffffff, {{ user.profile.rango.COLOR|default:'#fb7185' }}); shadow-lg shadow-rose-100/50">
+    
+    <div class="relative bg-white/95 backdrop-blur-md rounded-[2.1rem] p-5 flex flex-col items-center gap-4 overflow-hidden">
+        
+        <div class="size-16 rounded-2xl bg-slate-900 flex flex-col items-center justify-center text-white shadow-xl border-2 border-slate-700 transition-transform group-hover:scale-110">
+            <span class="text-[10px] font-black opacity-40 uppercase tracking-tighter leading-none mb-1">LVL</span>
+            <span class="text-3xl font-black leading-none">{{ user.profile.level }}</span>
+        </div>
+
+        <div class="text-center w-full">
+            <h4 class="text-lg font-black text-slate-800 uppercase tracking-tight truncate mb-2">
+                {{ user.username }}
+            </h4>
+            
+            <div class="flex justify-center">
+                <div class="rank-badge-animated animate-shimmer relative inline-flex items-center px-5 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-white shadow-md border-b-2 border-black/10"
+                     style="background: linear-gradient(45deg, {{ user.profile.rango.COLOR|default:'#fb7185' }}, #ff9bb0, {{ user.profile.rango.COLOR|default:'#fb7185' }});">
+                    <span class="relative z-10 whitespace-nowrap">{{ user.profile.rango.nombre }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+    </aside>
+
+    <main class="main-content">
+        <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+            <div>
+                <h1 class="text-4xl font-black text-slate-800">¡Hola, {{ user.first_name|default:user.username }}! ✨</h1>
+                <p class="text-slate-400 font-bold uppercase text-xs tracking-widest mt-1">Sincronización con el Reino de Cristal: 100%</p>
+            </div>
+            
+            <div class="flex items-center gap-4 bg-white p-3 rounded-[2rem] shadow-xl shadow-slate-100 border-4 border-rose-50 pr-6">
+                <div class="size-12 bg-yellow-400 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-yellow-100">
+                    <span class="material-symbols-outlined !text-3xl">database</span>
+                </div>
+                <div>
+                    <p class="font-black text-2xl text-slate-700 leading-none">{{ user.profile.xp }}</p>
+                    <p class="text-[10px] font-black uppercase text-slate-400">Puntos de Magia</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-slate-900 p-4 rounded-3xl border-b-4 border-slate-950 flex items-center gap-4 group">
+                <div class="size-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">sensors</span>
+                </div>
+                <div>
+                    <p class="text-[10px] font-mono text-green-500/70">SISTEMA</p>
+                    <p class="font-mono text-green-400 text-sm">ONLINE_SECURE</p>
+                </div>
+            </div>
+            <div class="bg-slate-900 p-4 rounded-3xl border-b-4 border-slate-950 flex items-center gap-4 group">
+                <div class="size-10 rounded-xl bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-400 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">military_tech</span>
+                </div>
+                <div>
+                    <p class="text-[10px] font-mono text-fuchsia-500/70">RELIQUIAS</p>
+                    <p class="font-mono text-fuchsia-400 text-sm">{{ user.achievements.count }} COLECTADAS</p>
+                </div>
+            </div>
+            <div class="bg-slate-900 p-4 rounded-3xl border-b-4 border-slate-950 flex items-center gap-4 group">
+                <div class="size-10 rounded-xl bg-sky-500/20 flex items-center justify-center text-sky-400 group-hover:scale-110 transition-transform">
+                    <span class="material-symbols-outlined">Memory</span>
+                </div>
+                <div>
+                    <p class="text-[10px] font-mono text-sky-500/70">REINO</p>
+                    <p class="font-mono text-sky-400 text-sm">CRISTAL_V.2</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="hero-banner {% if user.profile.avatar == 'lumi' %}lumi-mode{% endif %}">
+            <img src="{% if user.profile.avatar == 'lumi' %}{% static 'core/img/lumi_saludo.png' %}{% else %}{% static 'core/img/gumi_saludo.png' %}{% endif %}" 
+                 class="character-popout animate-hero">
+
+            <div class="flex-1 p-10 z-10 relative">
+                <span class="inline-block mb-4 px-4 py-1.5 rounded-full text-xs font-black uppercase bg-white/80 text-rose-500 shadow-sm">
+                    Rango: {{ user.profile.rango.nombre }}
+                </span>
+                <h2 class="text-4xl font-black text-slate-800 mb-6 leading-tight max-w-md">
+                    {% if user.profile.avatar == 'lumi' %}
+                        ¡Cuidado con las orejas! <br> Estamos volando alto. 🐰📡
+                    {% else %}
+                        ¡Código nivel guardián! <br> Gumi te acompaña. ✨🐻
+                    {% endif %}
+                </h2>
+                
+                <div class="max-w-xs bg-white/40 backdrop-blur-md rounded-3xl p-4 border border-white">
+                    <div class="flex justify-between text-[11px] font-black mb-2 uppercase text-slate-600">
+                        <span>Sincronización del Núcleo</span>
+                        <span>{{ user.profile.xp_percent }}%</span>
+                    </div>
+                    <div class="h-4 bg-white/60 rounded-full overflow-hidden p-1">
+                        <div class="h-full rounded-full transition-all duration-1000 {% if user.profile.avatar == 'lumi' %}bg-lumi-blue{% else %}bg-primary{% endif %}" 
+                             style="width: {{ user.profile.xp_percent }}%;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="mb-10">
+            <div class="flex items-center gap-3 mb-8">
+                <div class="size-10 bg-gradient-to-tr from-pink-500 to-rose-400 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                    <span class="material-symbols-outlined">auto_awesome</span>
+                </div>
+                <h3 class="text-2xl font-black text-slate-800 tracking-tight">Reliquias del Reino</h3>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                <div class="reliquia-card">
+                    <div class="reliquia-frame" style="background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%);">
+                        <div class="badge-check">
+                            <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+                        </div>
+                        <div class="reliquia-inner">
+                            <div class="magic-shine"></div>
+                            <span class="material-symbols-outlined text-4xl text-emerald-400" style="font-variation-settings: 'FILL' 1">magic_button</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-xs font-black text-slate-700 uppercase tracking-tighter text-center">Primer Hechizo</p>
+                </div>
+
+                <div class="reliquia-card">
+                    <div class="reliquia-frame" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                        <div class="badge-check">
+                            <span class="material-symbols-outlined text-[16px] font-bold">check</span>
+                        </div>
+                        <div class="reliquia-inner">
+                            <div class="magic-shine"></div>
+                            <span class="material-symbols-outlined text-4xl text-sky-400" style="font-variation-settings: 'FILL' 1">inventory_2</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-xs font-black text-slate-700 uppercase tracking-tighter text-center">Ordenando el Inventario</p>
+                </div>
+
+                <div class="reliquia-card reliquia-locked">
+                    <div class="reliquia-frame">
+                        <div class="reliquia-inner">
+                            <span class="material-symbols-outlined text-4xl text-slate-300">lock</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-[10px] font-black text-slate-400 uppercase tracking-tighter text-center">Maestro de los Cofres</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-10">
+            <div class="bubbly-card relative overflow-hidden group">
+                <div class="absolute -right-12 top-6 rotate-45 bg-rose-500 text-white text-[10px] font-black px-12 py-1.5 shadow-xl z-20">PRÓXIMA META</div>
+                
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="size-14 rounded-3xl bg-rose-100 flex items-center justify-center text-rose-500">
+                        <span class="material-symbols-outlined !text-3xl">flag</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">Misión Principal</h3>
+                </div>
+
+                {% if proxima_leccion %}
+                <div class="bg-slate-50 rounded-[2.5rem] p-6 border-4 border-white shadow-inner mb-8 transition-all group-hover:bg-rose-50/50">
+                    <p class="text-xs font-black text-rose-400 uppercase mb-2">{{ proxima_leccion.course.title }}</p>
+                    <h4 class="text-xl font-bold text-slate-700 mb-2">{{ proxima_leccion.title }}</h4>
+                    <p class="text-slate-400 text-sm">Desbloquea nuevas habilidades al completar este nivel.</p>
+                </div>
+                <a href="{% url 'lesson_explanation' proxima_leccion.id %}" 
+                   class="block w-full py-5 rounded-[2rem] text-center font-black text-white shadow-xl transform transition-all hover:scale-[1.03] active:scale-95
+                   {% if user.profile.avatar == 'lumi' %}bg-lumi-blue shadow-sky-200{% else %}bg-primary shadow-rose-200{% endif %}">
+                    ¡EMPEZAR NIVEL! 🚀
+                </a>
+                {% else %}
+                <div class="text-center py-10">
+                    <span class="material-symbols-outlined !text-6xl text-rose-200 mb-4">celebration</span>
+                    <p class="font-black text-slate-400">¡Has completado todas las misiones!</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="bubbly-card border-dashed border-rose-200 bg-rose-50/30">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="size-14 rounded-3xl bg-amber-100 flex items-center justify-center text-amber-500">
+                        <span class="material-symbols-outlined !text-3xl">bolt</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-800 tracking-tight">Desafío Rápido</h3>
+                </div>
+
+                {% if reto_rapido %}
+                <div class="mb-8 p-6 bg-white rounded-[2.5rem] shadow-sm">
+                    <p class="font-black text-slate-700 text-lg mb-2">{{ reto_rapido.titulo }}</p>
+                    <p class="text-slate-500 text-sm italic leading-relaxed">{{ reto_rapido.descripcion }}</p>
+                </div>
+                <button type="button" 
+                        onclick="iniciarReto('{{ reto_rapido.id }}', '{{ reto_rapido.tipo }}', '{{ reto_rapido.titulo }}', '{{ reto_rapido.descripcion }}', '{{ reto_rapido.opciones_o_respuesta }}')"
+                        class="w-full py-5 bg-white border-4 border-amber-200 text-amber-600 rounded-[2rem] font-black shadow-lg hover:bg-amber-50 transition-all hover:scale-[1.03]">
+                    ACEPTAR RETO (+20 XP)
+                </button>
+                {% else %}
+                <div class="text-center py-10 opacity-50">
+                    <span class="material-symbols-outlined !text-6xl text-slate-300 mb-4">wifi_find</span>
+                    <p class="font-black text-slate-400 uppercase text-xs tracking-widest">Buscando señales de retos...</p>
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    // --- LÓGICA DEL CURSOR MÁGICO CORREGIDA ---
+    const cursor = document.getElementById('custom-cursor');
+    const follower = document.getElementById('custom-cursor-follower');
+
+    document.addEventListener('mousemove', (e) => {
+        // Centramos la estrella restando la mitad de su tamaño aprox
+        cursor.style.left = (e.clientX - 10) + 'px';
+        cursor.style.top = (e.clientY - 10) + 'px';
+        
+        setTimeout(() => {
+            follower.style.left = (e.clientX - 7) + 'px';
+            follower.style.top = (e.clientY + 15) + 'px'; // El seguidor va un poco abajo
+        }, 60);
+    });
+
+    const interactiveElements = document.querySelectorAll('button, a, input, .reliquia-card, .nav-link, .bubbly-card');
+    
+    interactiveElements.forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.classList.add('cursor-hover-star');
+            follower.classList.add('follower-hover-star');
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.classList.remove('cursor-hover-star');
+            follower.classList.remove('follower-hover-star');
+        });
+    });
+
+    // 1. FONDO ANIMADO MEJORADO
+    document.addEventListener('DOMContentLoaded', () => {
+        const bgContainer = document.getElementById('magic-background');
+        const icons = ['code', 'terminal', 'favorite', 'star', 'rocket', 'extension', 'bolt', 'potted_plant'];
+        
+        for (let i = 0; i < 25; i++) {
+            const span = document.createElement('span');
+            span.classList.add('material-symbols-outlined', 'floating-icon');
+            span.innerText = icons[Math.floor(Math.random() * icons.length)];
+            
+            span.style.left = `${Math.random() * 100}vw`;
+            span.style.top = `${Math.random() * 100}vh`;
+            
+            const duration = 10 + Math.random() * 15;
+            span.style.animationDuration = `${duration}s`;
+            span.style.animationDelay = `-${Math.random() * 10}s`;
+            span.style.fontSize = `${20 + Math.random() * 30}px`;
+            
+            span.style.color = "{{ user.profile.avatar }}" === "lumi" ? '#bae6fd' : '#fecdd3';
+            
+            bgContainer.appendChild(span);
+        }
+    });
+
+    // 2. LÓGICA DE RETOS
+    function iniciarReto(id, tipo, titulo, descripcion, extra) {
+        if (tipo === 'terminal') {
+            window.location.href = "{% url 'terminal_libre' %}?msg=" + encodeURIComponent(descripcion);
+        } else {
+            let config = {
+                title: `<span class="font-black text-slate-800">${titulo}</span>`,
+                text: descripcion,
+                confirmButtonText: '¡Validar! ✨',
+                confirmButtonColor: '#fb7185',
+                showCancelButton: true,
+                cancelButtonText: 'Ahora no',
+                customClass: {
+                    popup: 'rounded-[3rem] border-8 border-rose-50',
+                    confirmButton: 'rounded-2xl font-black px-8 py-3',
+                    cancelButton: 'rounded-2xl font-black'
+                }
+            };
+
+            if (tipo === 'pregunta') {
+                config.input = 'text';
+                config.inputPlaceholder = 'Tu respuesta mágica aquí...';
+            } else if (tipo === 'quiz') {
+                const opciones = extra.split(',');
+                let inputOptions = {};
+                opciones.forEach(opt => { inputOptions[opt.trim()] = opt.trim(); });
+                config.input = 'radio';
+                config.inputOptions = inputOptions;
+            }
+
+            Swal.fire(config).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    fetch(`/validar-reto/${id}/?respuesta=${encodeURIComponent(result.value)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                                Swal.fire({
+                                    title: '¡SÍII! ✨',
+                                    text: data.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#fb7185',
+                                    customClass: { popup: 'rounded-[3rem]' }
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire({
+                                    title: '¡Casi!',
+                                    text: data.message,
+                                    icon: 'error',
+                                    confirmButtonColor: '#1e293b',
+                                    customClass: { popup: 'rounded-[3rem]' }
+                                });
+                            }
+                        });
+                }
+            });
+        }
+    }
+</script>
+
+<style>
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0); }
+        50% { transform: translateY(-20px) rotate(2deg); }
+    }
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4c8ce6",
+                        "background-light": "#fff9e6", /* Pastel Yellow Background */
+                        "background-dark": "#111821",
+                        "pastel-pink": "#ffccd5",
+                        "pastel-blue": "#cce5ff",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1.5rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Custom pattern for the background */
+        .bg-pattern {
+            background-image: radial-gradient(#ffe082 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/10 bg-white/80 dark:bg-background-dark/80 backdrop-blur-sm px-6 py-3 md:px-40 sticky top-0 z-50">
+<div class="flex items-center gap-3 text-primary">
+<div class="size-8 bg-primary rounded-full flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">pets</span>
+</div>
+<h2 class="text-[#0e131b] dark:text-white text-lg font-bold leading-tight tracking-tight">Lumi &amp; Gumi</h2>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-[#506d95] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Lecciones</a>
+<a class="text-[#506d95] dark:text-gray-300 text-sm font-semibold hover:text-primary transition-colors" href="#">Desafíos</a>
+</nav>
+<div class="bg-primary/10 rounded-full p-1 border-2 border-primary">
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8" data-alt="Cute avatar portrait of a child" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCl5TBcw-0gHxUG7Rz8mGi8AcQtumRjWqgztFUZ0OJMQ_Kl8ApfZ-t_KvanonsM6Cya54WwwJHBmv0sm4eFxDtWAIpkhQVcWPvh-g_T7okvrF_S1CfkUV4kz17PbOOCXzrVBwa47Ldgyx9vWDfROXinf2UpY8-bTMKXyIOOqNS84RBv8vYZXAyEeie8kdf9DEJy29oUXVKC6g3xEY20w7mPslRepLZq8UVTYUKSFNh1Vjapm172DsSa7v2QbC6H2XoStWua2duoKpo");'></div>
+</div>
+</div>
+</header>
+<!-- Main Content Area with Pattern -->
+<main class="flex-1 flex items-center justify-center p-6 bg-pattern relative overflow-hidden">
+<!-- Floating shapes for extra 2D flair -->
+<div class="absolute top-20 left-20 text-yellow-300/40 select-none"><span class="material-symbols-outlined text-[80px]">cloud</span></div>
+<div class="absolute bottom-40 right-20 text-yellow-300/40 select-none"><span class="material-symbols-outlined text-[100px]">settings</span></div>
+<div class="absolute top-1/2 left-10 text-yellow-300/40 select-none"><span class="material-symbols-outlined text-[60px]">construction</span></div>
+<!-- Central Construction Card -->
+<div class="layout-content-container flex flex-col max-w-[800px] w-full bg-white dark:bg-slate-900 rounded-xl p-8 md:p-12 text-center items-center shadow-none border-4 border-primary/10">
+<!-- Mascot Illustration Container -->
+<div class="relative w-64 h-64 mb-8">
+<!-- Representative Gumi Bear Graphic -->
+<div class="w-full h-full bg-orange-200 rounded-full relative overflow-hidden border-4 border-orange-300">
+<!-- Construction Hat -->
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-20 bg-primary rounded-t-full border-b-4 border-blue-600"></div>
+<!-- Ears -->
+<div class="absolute top-10 left-8 w-12 h-12 bg-orange-200 border-4 border-orange-300 rounded-full"></div>
+<div class="absolute top-10 right-8 w-12 h-12 bg-orange-200 border-4 border-orange-300 rounded-full"></div>
+<!-- Face -->
+<div class="absolute top-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+<div class="flex gap-10">
+<div class="w-4 h-4 bg-slate-800 rounded-full"></div>
+<div class="w-4 h-4 bg-slate-800 rounded-full"></div>
+</div>
+<div class="w-8 h-4 bg-orange-300 rounded-full mt-2"></div>
+<div class="w-10 h-1 bg-slate-800 rounded-full"></div>
+</div>
+</div>
+<!-- Tool Icons (Wrench and Hammer) -->
+<div class="absolute -bottom-2 -left-4 bg-pastel-pink p-4 rounded-full border-4 border-white">
+<span class="material-symbols-outlined text-primary text-4xl">build</span>
+</div>
+<div class="absolute -bottom-2 -right-4 bg-pastel-blue p-4 rounded-full border-4 border-white">
+<span class="material-symbols-outlined text-primary text-4xl">handyman</span>
+</div>
+</div>
+<!-- Text Content -->
+<div class="flex flex-col gap-4 max-w-lg">
+<h1 class="text-slate-900 dark:text-white text-3xl md:text-5xl font-extrabold leading-tight tracking-tight">
+                    ¡Estamos trabajando en esto!
+                </h1>
+<p class="text-[#506d95] dark:text-gray-400 text-lg md:text-xl font-medium">
+                    Gumi está preparando algo increíble para ti. <br/> ¡Vuelve pronto!
+                </p>
+</div>
+<!-- CTA Button -->
+<div class="mt-10">
+<button class="flex items-center justify-center gap-3 px-10 py-5 bg-primary hover:bg-blue-600 text-white text-xl font-bold rounded-full transition-all transform hover:scale-105 active:scale-95 shadow-none">
+<span class="material-symbols-outlined">home</span>
+<span>Volver al Dashboard</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark border-t border-primary/10">
+<div class="px-6 py-10 md:px-40 flex flex-col items-center gap-8">
+<div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-4">
+<a class="text-[#506d95] dark:text-gray-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Privacidad</a>
+<a class="text-[#506d95] dark:text-gray-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Soporte</a>
+<a class="text-[#506d95] dark:text-gray-400 text-sm font-semibold hover:text-primary transition-colors" href="#">Guía para Padres</a>
+</div>
+<div class="flex justify-center gap-6">
+<a class="w-10 h-10 rounded-full bg-pastel-blue flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">share</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-pastel-pink flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">favorite</span>
+</a>
+<a class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 hover:bg-yellow-500 hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">grade</span>
+</a>
+</div>
+<div class="flex flex-col items-center gap-2">
+<p class="text-[#506d95] dark:text-gray-500 text-sm font-medium">
+                    © 2024 Lumi &amp; Gumi Learning. Hecho con amor para futuros programadores.
+                </p>
+<div class="flex gap-1">
+<div class="size-2 bg-primary rounded-full"></div>
+<div class="size-2 bg-pastel-pink rounded-full"></div>
+<div class="size-2 bg-yellow-400 rounded-full"></div>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

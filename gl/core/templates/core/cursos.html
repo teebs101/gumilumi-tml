@@ -1,0 +1,286 @@
+{% extends 'base/base_private.html' %}
+{% load static %}
+
+{% block title %}Mis cursos | Gumi & Lumi{% endblock %}
+
+{% block header %}
+    {% include 'base/header_private.html' %}
+{% endblock %}
+
+{% block content %}
+<style>
+    /* 1. Reset y Base */
+    .font-cute { font-family: 'Fredoka', sans-serif; }
+    
+    /* 2. Cursor de Estrellas (Partículas) */
+    .star-particle {
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        color: {% if user.profile.avatar == 'lumi' %}#38bdf8{% else %}#fb7185{% endif %};
+        animation: star-fade 0.8s ease-out forwards;
+    }
+    @keyframes star-fade {
+        0% { opacity: 1; transform: scale(1) translateY(0); }
+        100% { opacity: 0; transform: scale(0.5) translateY(20px); }
+    }
+
+    /* 3. Iconos Flotantes del Fondo */
+    .floating-icon {
+        position: absolute;
+        select-none: none;
+        pointer-events: none;
+        z-index: -1;
+        animation: float-around linear infinite;
+    }
+    @keyframes float-around {
+        0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+        10% { opacity: 0.4; }
+        90% { opacity: 0.4; }
+        100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* 4. Estilos de Navegación (Mejorados) */
+    header nav .material-symbols-outlined {
+        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+    }
+
+    .nav-item-cute {
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    }
+    .nav-item-cute:hover { transform: scale(1.05) translateY(-2px); }
+
+    /* Forzar que el contenido principal sea transparente para ver el fondo */
+    main { background: transparent !important; }
+</style>
+
+<div class="font-cute relative min-h-screen overflow-x-hidden">
+    <div id="magic-background" class="fixed inset-0 pointer-events-none -z-10 overflow-hidden"></div>
+
+    <main class="flex-1 flex flex-col items-center relative z-10">
+        <div class="w-full max-w-[1200px] px-4 md:px-10 py-6 flex flex-col gap-8">
+            
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex flex-col gap-2">
+                    <nav class="flex items-center gap-2 text-primary font-black text-xs uppercase tracking-widest">
+                        <span class="material-symbols-outlined text-sm">auto_stories</span>
+                        Biblioteca de Aventuras
+                    </nav>
+                    <h1 class="text-3xl md:text-5xl font-black text-slate-800 leading-tight">
+                        ¿Qué vamos a <span class="text-primary">programar</span> hoy?
+                    </h1>
+                    <p class="text-slate-500 font-medium max-w-lg">
+                        Elige un curso para ganar XP. ¡{% if user.profile.avatar == 'lumi' %}Lumi{% else %}Gumi{% endif %} te acompaña!
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-[2rem] border-4 border-slate-50 shadow-xl shadow-slate-200/50 flex items-center gap-4 min-w-[280px]">
+                    <div class="size-14 rounded-2xl flex items-center justify-center text-white shadow-lg rotate-3 
+                        {% if user.profile.avatar == 'lumi' %}bg-sky-400{% else %}bg-rose-400{% endif %}">
+                        <span class="material-symbols-outlined text-3xl">workspace_premium</span>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Tu Rango</p>
+                        <p class="text-2xl font-black text-slate-800">Nivel {{ user.profile.level }}</p>
+                        <div class="w-32 h-2 bg-slate-100 rounded-full mt-1">
+                            <div class="h-full rounded-full {% if user.profile.avatar == 'lumi' %}bg-sky-400{% else %}bg-rose-400{% endif %}" 
+                                 style="width: {{ user.profile.xp_percent }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <h2 class="text-slate-800 text-xl font-black flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary">terminal</span>
+                    Reinos del Mundo Python
+                </h2>
+                <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                    <a href="?cat=all" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border-4 border-white shadow-sm font-bold text-slate-500 hover:border-primary/20 transition-all">Todo</a>
+                    <a href="?cat=variables" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border-4 border-white shadow-sm font-bold text-slate-500 hover:border-purple-200 transition-all">Variables</a>
+                    <a href="?cat=logica" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border-4 border-white shadow-sm font-bold text-slate-500 hover:border-blue-200 transition-all">Lógica</a>
+                    <a href="?cat=bucles" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border-4 border-white shadow-sm font-bold text-slate-500 hover:border-blue-200 transition-all">Bucles</a>
+                    <a href="?cat=funciones" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border-4 border-white shadow-sm font-bold text-slate-500 hover:border-blue-200 transition-all">Funciones</a>
+                </div>
+            </div>
+
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for course in courses %}
+    <div class="group h-full">
+        {% if user.profile.level >= course.min_level %}
+        
+        {# Definimos el color base del curso, si no tiene, usamos uno por defecto #}
+        {% with c_color=course.color|default:"blue" %}
+        <a href="{% url 'course_detail' course.id %}" 
+           class="flex flex-col justify-between h-full rounded-[2.5rem] p-8 shadow-xl transition-all hover:-translate-y-2 border-4"
+           style="background-color: color-mix(in srgb, {{ c_color }}, white 90%); border-color: white; hover:border-color: {{ c_color }};">
+            
+            <div>
+                <div class="flex justify-between items-center mb-6">
+                    <span class="px-4 py-1 rounded-full text-[10px] font-black uppercase shadow-sm"
+                          style="background-color: white; color: {{ c_color }};">
+                        Lvl {{ course.min_level }}
+                    </span>
+                    <span class="material-symbols-outlined opacity-40 group-hover:opacity-100 transition-opacity" 
+                          style="color: {{ c_color }};">
+                        auto_awesome
+                    </span>
+                </div>
+
+                <h3 class="text-2xl font-bold text-slate-800 mb-3">{{ course.title }}</h3>
+                <p class="text-slate-600 font-medium text-sm leading-relaxed">{{ course.description }}</p>
+            </div>
+
+            <div class="mt-8 flex items-center justify-between">
+                <span class="text-xs font-black uppercase tracking-widest" style="color: {{ c_color }};">
+                    ¡Comenzar misión!
+                </span>
+                <div class="size-12 rounded-2xl text-white flex items-center justify-center shadow-lg group-hover:rotate-12 transition-all"
+                     style="background-color: {{ c_color }};">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </div>
+            </div>
+        </a>
+        {% endwith %}
+
+        {% else %}
+        <div class="flex flex-col justify-between h-full bg-slate-100 border-4 border-dashed border-slate-200 rounded-[2.5rem] p-8 opacity-60 grayscale relative">
+            <div class="flex justify-between items-center mb-6">
+                <span class="material-symbols-outlined text-slate-400">lock</span>
+                <span class="text-[10px] font-black uppercase text-slate-400 italic">Bloqueado</span>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-400 mb-3">{{ course.title }}</h3>
+            <p class="text-slate-400 text-sm italic leading-relaxed">Necesitas nivel {{ course.min_level }} para desbloquear este poder mágico.</p>
+            <div class="mt-8 flex justify-end">
+                <div class="size-12 rounded-2xl bg-slate-300 text-white flex items-center justify-center">
+                    <span class="material-symbols-outlined">lock_open</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+        <p class="col-span-full text-center py-10 font-bold text-slate-400 font-cute italic">El reino está vacío por ahora... 🐻</p>
+    {% endfor %}
+</section>
+        </div>
+    </main>
+</div>
+<footer class="relative w-full bg-[#4c1d95] pt-20 pb-10 px-6 md:px-20 text-white rounded-t-[5rem] overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div class="absolute top-10 left-[10%] w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
+        <div class="absolute top-20 left-[80%] w-3 h-3 bg-lila-main rounded-full animate-bounce" style="animation-duration: 3s;"></div>
+        <div class="absolute bottom-10 left-[40%] w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-12 mb-12">
+            
+            <div class="group flex items-center gap-4 cursor-pointer">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-pink-magic blur-lg opacity-40 group-hover:opacity-100 transition-all"></div>
+                    <div class="relative w-14 h-14 bg-gradient-to-br from-pink-magic to-lila-dark rounded-2xl flex items-center justify-center shadow-xl transform group-hover:rotate-[360deg] duration-700 transition-all">
+                        <span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1">pets</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-kids font-bold text-3xl tracking-tight">Gumi & Lumi</span>
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{% url 'terminos' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-pink-300 group-hover:scale-125 transition-transform">category</span>
+                    <span class="font-bold text-sm">Términos</span>
+                </a>
+                <a href="{% url 'soporte' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-yellow-300 group-hover:scale-125 transition-transform">support</span>
+                    <span class="font-bold text-sm">Soporte</span>
+                </a>
+                <a href="{% url 'feedback_page' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-blue-300 group-hover:scale-125 transition-transform">sticker</span>
+                    <span class="font-bold text-sm">Comentarios</span>
+                </a>
+            </div>
+
+            <div class="flex gap-4">
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-pink-magic hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">chat_bubble</span>
+                </a>
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-lila-main hover:shadow-[0_0_20px_rgba(167,139,250,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">mail</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+        <div class="mt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 text-lila-soft/60">
+                <span class="material-symbols-outlined text-sm">favorite</span>
+                <p class="font-medium text-sm">© T.M.L ✨ <span class="text-white/80">Aprender es la magia que cambia el mundo.</span></p>
+            </div>
+            
+            <div class="flex items-center gap-3 px-4 py-2 bg-black/30 rounded-full border border-white/10">
+                <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-pink-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-blue-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-yellow-400"></div>
+                </div>
+                <span class="text-[10px] font-black text-green-400 uppercase tracking-widest animate-pulse">Servidores Activos</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+        }
+        .group-hover\:animate-wiggle:hover {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+    </style>
+</footer>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Iconos flotantes (Corregido para que se esparzan por toda la pantalla)
+    const bgContainer = document.getElementById('magic-background');
+    const icons = ['star', 'auto_stories', 'terminal', 'diamond', 'bolt', 'pentagon', 'favorite'];
+    
+    for (let i = 0; i < 25; i++) {
+        const span = document.createElement('span');
+        span.classList.add('material-symbols-outlined', 'floating-icon');
+        span.innerText = icons[Math.floor(Math.random() * icons.length)];
+        
+        const left = Math.random() * 100;
+        const duration = 15 + Math.random() * 20;
+        const delay = Math.random() * 20;
+        const size = 15 + Math.random() * 25;
+
+        span.style.left = `${left}%`;
+        span.style.animationDuration = `${duration}s`;
+        span.style.animationDelay = `-${delay}s`;
+        span.style.fontSize = `${size}px`;
+        span.style.color = "{{ user.profile.avatar }}" === "lumi" ? '#bae6fd' : '#fecdd3';
+
+        bgContainer.appendChild(span);
+    }
+
+    // 2. Cursor de Estrellas
+    document.addEventListener('mousemove', (e) => {
+        if (Math.random() > 0.1) return; // No generar en cada pixel para no saturar
+        const star = document.createElement('span');
+        star.classList.add('material-symbols-outlined', 'star-particle');
+        star.innerText = 'grade';
+        star.style.left = e.clientX + 'px';
+        star.style.top = e.clientY + 'px';
+        star.style.fontSize = (Math.random() * 15 + 10) + 'px';
+        document.body.appendChild(star);
+        setTimeout(() => star.remove(), 800);
+    });
+});
+</script>
+{% endblock %}

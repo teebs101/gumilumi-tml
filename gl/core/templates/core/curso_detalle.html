@@ -1,0 +1,338 @@
+{% extends 'base/base_private.html' %}
+{% load static %}
+
+{% block title %}Curso: {{ course.title }} | Gumi & Lumi{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+    :root {
+        --primary-pink: #ee2b6c;
+        --soft-pink: #fff9fb;
+        --glass-white: rgba(255, 255, 255, 0.8);
+    }
+
+    body { background-color: var(--soft-pink) !important; overflow-x: hidden; }
+
+    /* 1. Efecto de entrada para las tarjetas */
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-entry { animation: slideUp 0.6s ease-out forwards; }
+
+    /* Estilo para los iconos flotantes animados */
+    .floating-icon {
+        position: absolute;
+        color: rgba(238, 43, 108, 0.15); /* Rosa muy sutil */
+        pointer-events: none;
+        z-index: -1;
+        user-select: none;
+        animation: float-around linear infinite; /* Animación de movimiento */
+    }
+
+    @keyframes float-around {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+        25% {
+            transform: translate(10px, 15px) rotate(5deg);
+        }
+        50% {
+            transform: translate(-5px, 25px) rotate(-5deg);
+        }
+        75% {
+            transform: translate(-15px, 10px) rotate(3deg);
+        }
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+    }
+
+    /* 2. Tarjetas estilo "Bubble" Premium */
+    .card-bubble-pro {
+        background: var(--glass-white);
+        backdrop-filter: blur(12px);
+        border: 4px solid #ffffff;
+        border-radius: 3rem;
+        box-shadow: 0 20px 40px rgba(238, 43, 108, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .card-bubble-pro:hover { transform: translateY(-5px); box-shadow: 0 25px 50px rgba(238, 43, 108, 0.12); }
+
+    /* 3. Reliquias: Inventario Pro */
+    .reliquia-slot {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1/1;
+        display: flex;
+        flex-col items-center justify-center;
+    }
+
+    .reliquia-orb {
+        width: 85%;
+        height: 85%;
+        border-radius: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .earned-glow {
+        background: radial-gradient(circle, #fff 0%, #fff0f5 100%);
+        border: 3px solid #ffffff;
+        box-shadow: 0 10px 20px rgba(238, 43, 108, 0.2);
+    }
+
+    /* El borde animado solo para las ganadas */
+    .rainbow-ring {
+        position: absolute;
+        inset: -4px;
+        border-radius: 2.2rem;
+        padding: 4px;
+        background: linear-gradient(45deg, #ff0080, #ff8c00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff0080);
+        background-size: 300%;
+        mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: rotate-gradient 6s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .reliquia-earned .rainbow-ring { opacity: 1; }
+
+    @keyframes rotate-gradient {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 300% 50%; }
+    }
+
+    /* 4. Barra de progreso Neumórfica */
+    .progress-container {
+        background: #f1f5f9;
+        border-radius: 99px;
+        padding: 6px;
+        box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .progress-fill {
+        background: linear-gradient(90deg, #ee2b6c, #ff85a1);
+        height: 14px;
+        border-radius: 99px;
+        position: relative;
+        transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .progress-fill::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(rgba(255,255,255,0.3), transparent);
+        border-radius: 99px;
+    }
+
+    /* 5. Estrellas y fondo */
+    .bg-decoration { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+</style>
+
+<div class="font-cute min-h-screen relative overflow-hidden">
+    <div id="magic-background" class="bg-decoration"></div>
+
+    <main class="max-w-7xl mx-auto px-4 py-10 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <div class="lg:col-span-8 space-y-10">
+                
+                <div class="card-bubble-pro p-8 animate-entry">
+                    <div class="flex flex-col md:flex-row items-center gap-8">
+                        <div class="relative group">
+                            <div class="absolute -inset-1 bg-gradient-to-r from-pink-400 to-purple-400 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition"></div>
+                            <div class="relative bg-white p-6 rounded-[2.5rem] border-4 border-pink-50 shadow-xl">
+                                <img src="{% static 'core/img/curso_icon.png' %}" 
+                                     class="size-28 object-contain transform group-hover:scale-110 transition-transform duration-500">
+                            </div>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <span class="inline-block px-4 py-1 bg-pink-100 text-primary-pink text-xs font-black rounded-full mb-3 tracking-widest uppercase">Misión Actual</span>
+                            <h1 class="text-4xl font-black text-blue-900 leading-tight mb-3">{{ course.title }}</h1>
+                            <p class="text-slate-500 text-lg max-w-xl">{{ course.description }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-bubble-pro p-8 animate-entry" style="animation-delay: 0.1s;">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 bg-yellow-100 rounded-2xl text-yellow-600">
+                                <span class="material-symbols-outlined !text-3xl">workspace_premium</span>
+                            </div>
+                            <div>
+                                <h3 class="font-black text-blue-900 text-xl">Tu Maestría</h3>
+                                <p class="text-slate-400 text-xs font-bold uppercase tracking-tighter">¡Casi llegas a la meta!</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-4xl font-black text-primary-pink">{{ progreso|default:"0" }}%</span>
+                        </div>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-fill" style="width: {{ progreso|default:'0' }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="space-y-6 animate-entry" style="animation-delay: 0.2s;">
+                    <h3 class="text-2xl font-black text-blue-900 px-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary-pink">map</span>
+                        Camino del Héroe
+                    </h3>
+                    
+                    <div class="grid gap-4">
+                        {% for lesson in lecciones %}
+                            {% if forloop.first or completadas.count >= forloop.counter0 %}
+                                <div class="group relative bg-white border-4 border-white hover:border-pink-200 p-6 rounded-[2.5rem] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row items-center justify-between gap-6">
+                                    <div class="flex items-center gap-5">
+                                        <div class="size-16 rounded-3xl flex items-center justify-center border-4 border-white shadow-lg {% if lesson.id in completadas %} bg-green-500 text-white {% else %} bg-gradient-to-br from-pink-500 to-rose-400 text-white {% endif %} transition-colors">
+                                            <span class="material-symbols-outlined !text-3xl font-bold">
+                                                {% if lesson.id in completadas %}done_all{% else %}bolt{% endif %}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-black text-xl text-blue-900">{{ lesson.title }}</h4>
+                                            <span class="text-xs font-bold {% if lesson.id in completadas %}text-green-500{% else %}text-slate-400{% endif %} uppercase">
+                                                {% if lesson.id in completadas %}✔ ¡Completada con éxito!{% else %}✨ Disponible para jugar{% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'lesson_explanation' lesson.id %}" 
+                                       class="w-full md:w-auto px-10 py-4 rounded-2xl font-black text-white shadow-lg transform hover:scale-105 active:scale-95 transition-all
+                                       {% if lesson.id in completadas %} bg-slate-800 hover:bg-slate-900 {% else %} bg-primary-pink hover:bg-rose-600 {% endif %}">
+                                        {% if lesson.id in completadas %}REPASAR{% else %}¡INICIAR!{% endif %}
+                                    </a>
+                                </div>
+                            {% else %}
+                                <div class="p-6 bg-slate-100/50 rounded-[2.5rem] border-4 border-dashed border-slate-200 flex items-center gap-5 opacity-60">
+                                    <div class="size-16 rounded-3xl bg-slate-200 text-slate-400 flex items-center justify-center">
+                                        <span class="material-symbols-outlined">lock</span>
+                                    </div>
+                                    <p class="font-black text-slate-400 text-xl">{{ lesson.title }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-8">
+                
+                <div class="card-bubble-pro p-8 text-center relative overflow-hidden group animate-entry" style="animation-delay: 0.3s;">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <span class="material-symbols-outlined !text-8xl">forum</span>
+                    </div>
+                    <img src="{% static 'core/img/gumi_laptop.png' %}" class="w-44 mx-auto mb-4 transform group-hover:rotate-3 group-hover:scale-110 transition-all duration-500">
+                    <h3 class="text-2xl font-black text-blue-900 mb-2">Ayuda Mágica</h3>
+                    <p class="text-slate-500 text-sm mb-6">¿Te trabaste en un nivel? ¡Lumi sabe la respuesta!</p>
+                    <a href="{% url 'chat' %}" class="block w-full py-4 bg-blue-900 text-white font-black rounded-[1.5rem] shadow-xl hover:bg-primary-pink transition-colors">
+                        PREGUNTAR A LUMI ✨
+                    </a>
+                </div>
+
+                <div class="card-bubble-pro p-8 animate-entry" style="animation-delay: 0.4s;">
+                    <h3 class="text-xl font-black text-blue-900 mb-8 flex items-center justify-center gap-3">
+                        <span class="material-symbols-outlined text-primary-pink">stars</span>
+                        Reliquias
+                    </h3>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        {% for logro in logros_reino %}
+                            <div class="flex flex-col items-center group">
+                                <div class="reliquia-slot">
+                                    <div class="rainbow-ring"></div>
+                                    <div class="reliquia-orb {% if logro.id in logros_ganados_ids %}reliquia-earned earned-glow{% else %}bg-slate-100 border-2 border-dashed border-slate-300 opacity-40 grayscale{% endif %}">
+                                        <span class="material-symbols-outlined !text-4xl transition-all duration-500 group-hover:scale-125
+                                            {% if logro.id in logros_ganados_ids %}text-primary-pink{% else %}text-slate-400{% endif %}"
+                                            style="{% if logro.id in logros_ganados_ids %}font-variation-settings: 'FILL' 1{% endif %}">
+                                            {{ logro.icon_name|default:'diamond' }}
+                                        </span>
+                                    </div>
+                                    {% if logro.id in logros_ganados_ids %}
+                                        <div class="absolute -top-1 -right-1 bg-green-500 text-white rounded-full size-7 flex items-center justify-center border-4 border-white shadow-lg animate-bounce">
+                                            <span class="material-symbols-outlined !text-xs font-black">check</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <span class="text-[10px] font-black text-center uppercase mt-3 tracking-widest leading-tight
+                                    {% if logro.id in logros_ganados_ids %}text-blue-900{% else %}text-slate-400{% endif %}">
+                                    {{ logro.name }}
+                                </span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    window.onload = function() {
+        // 1. Confeti si es el final
+        if (parseInt("{{ progreso|default:0 }}") === 100) {
+            const end = Date.now() + 3 * 1000;
+            const colors = ['#ee2b6c', '#ffffff'];
+            (function frame() {
+                confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+                confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+        }
+
+        // 2. Decoración de fondo dinámica con MOVIMIENTO
+        const bg = document.getElementById('magic-background');
+        const icons = ['favorite', 'star', 'rocket', 'code', 'category', 'extension', 'bolt', 'potted_plant'];
+        
+        for (let i = 0; i < 25; i++) {
+            const el = document.createElement('span');
+            el.className = 'material-symbols-outlined floating-icon';
+            el.innerText = icons[Math.floor(Math.random() * icons.length)];
+            
+            // Posición inicial aleatoria
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.top = Math.random() * 100 + 'vh';
+            
+            // Tamaño aleatorio
+            el.style.fontSize = Math.random() * 30 + 20 + 'px';
+            
+            // Duración de la animación aleatoria (entre 6 y 12 segundos) para que no se muevan todos iguales
+            const duration = 6 + Math.random() * 6;
+            el.style.animationDuration = `${duration}s`;
+            
+            // Retraso aleatorio para que no empiecen al mismo tiempo
+            el.style.animationDelay = `-${Math.random() * 10}s`;
+            
+            bg.appendChild(el);
+        }
+
+        // 3. Partículas de rastro de mouse
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.2) return;
+            const p = document.createElement('div');
+            p.className = 'fixed pointer-events-none z-[9999] text-pink-400 opacity-70';
+            p.innerHTML = '✦';
+            p.style.left = e.clientX + 'px';
+            p.style.top = e.clientY + 'px';
+            document.body.appendChild(p);
+            
+            p.animate([
+                { transform: 'translate(0,0) scale(1)', opacity: 0.7 },
+                { transform: `translate(${(Math.random()-0.5)*40}px, 40px) scale(0)`, opacity: 0 }
+            ], { duration: 800, easing: 'ease-out' }).onfinish = () => p.remove();
+        });
+    };
+</script>
+{% endblock %}

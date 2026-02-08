@@ -1,0 +1,100 @@
+{% load static %}
+<div class="font-cute">
+<header class="flex items-center justify-between border-b border-[#e8edf3] px-10 py-3 bg-white">
+    
+    <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-primary text-3xl">school</span>
+        <h2 class="text-xl font-bold">Gumi & Lumi</h2>
+    </div>
+
+<nav class="flex items-center gap-3">
+
+{% with current=request.resolver_match.url_name %}
+
+<a href="{% url 'dashboard' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'dashboard' %}
+      bg-soft-blue border-blue-500 text-blue-900 shadow-md
+   {% else %}
+      border-soft-blue text-soft-blue hover:bg-soft-blue hover:bg-pastel-blue hover:text-primary hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">home</span>
+   Inicio
+</a>
+
+<a href="{% url 'courses' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'courses' %}
+      bg-pastel-yellow border-star-yellow text-[#7a5c00] shadow-md
+   {% else %}
+      border-star-yellow text-[#a07800]  hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">school</span>
+   Cursos
+</a>
+
+<a href="{% url 'terminal_libre' %}" 
+       class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+       {% if current == 'terminal_libre' %}
+          bg-slate-700 border-slate-900 text-white shadow-md
+       {% else %}
+          border-slate-800 bg-slate-800 text-white hover:bg-slate-700 hover:-translate-y-1 hover:scale-105
+       {% endif %}">
+        <span class="material-symbols-outlined">terminal</span> 
+        Terminal
+    </a>
+
+<a href="{% url 'logros' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'logros' %}
+      bg-pastel-green border-hill-green text-green-900 shadow-md
+   {% else %}
+      border-hill-green text-green-700 hover:bg-pastel-green hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">emoji_events</span>
+   Logros
+</a>
+
+<a href="{% url 'chat' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'chat' %}
+      bg-soft-pink border-primary-pink text-pink-900 shadow-md
+   {% else %}
+      border-soft-pink text-pink-700 hover:bg-soft-pink hover:text-pink-900 hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">chat</span>
+   Chat
+</a>
+
+<a href="{% url 'account' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'account' %}
+      bg-soft-blue border-primary text-blue-900 shadow-md
+   {% else %}
+      border-soft-blue text-blue-700 hover:bg-soft-blue hover:text-blue-900 hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">person</span>
+   Cuenta
+</a>
+
+{% endwith %}
+</nav>
+
+    <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-[1.5rem]">
+        <div class="size-9 rounded-full bg-white border-2 shadow-sm overflow-hidden p-1">
+            {% if user.profile.avatar == 'lumi' %}
+                <img src="{% static 'core/img/lumi_icon.png' %}" class="w-full h-full object-contain">
+            {% else %}
+                <img src="{% static 'core/img/gumi_icon.png' %}" class="w-full h-full object-contain">
+            {% endif %}
+        </div>
+        <div class="flex-1">
+            <p class="text-xs font-black truncate">{{ user.username }}</p>
+            <p class="text-[9px] font-bold text-slate-400 uppercase">Nivel {{ user.profile.level }}</p>
+        </div>
+        <a href="{% url 'logout' %}">
+            <span class="material-symbols-outlined text-slate-300 hover:text-red-400">logout</span>
+        </a>
+    </div>
+</header>
+</div>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %}Gumi & Lumi{% endblock %}</title>
+
+    <!-- Tailwind CDN (como Stitch) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <!-- Tailwind Config ORIGINAL -->
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#4c99e6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "pastel-pink": "#FCE4EC",
+                        "pastel-blue": "#E3F2FD",
+                        "pastel-green": "#E8F5E9",
+                        "pastel-yellow": "#FFFDE7",
+                        "pastelCoral": "#FFE5E0",
+                        "pastelMint": "#E8F9F2",
+                        "primary-pink": "#FF8EBC",
+                        "soft-pink": "#FFD1E3",
+                        "primary-blue": "#7BD3EA",
+                        "soft-blue": "#D1F2FB",
+                        "star-yellow": "#FFE082",
+                        "hill-green": "#A1EEBD"
+                    },
+                    
+                    fontFamily: {
+                        sans: ['Lexend', 'sans-serif'],
+                        display: ["Lexend", "sans-serif"],
+                        sans: ['Lexend', 'sans-serif'],
+                        cute: ['Fredoka', 'cursive'],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "1rem",
+                        xl: "1.5rem",
+                        full: "9999px",
+                        borderRadius: {
+                        "bubble": "2.5rem",
+                    },
+                },
+            },
+        }
+    }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#0e141b] dark:text-white transition-colors duration-200">
+<body class="font-sans">
+
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+
+    {% block header %}{% endblock %}
+    {% include "base/header_public.html" %}
+
+    <main class="flex-1 flex flex-col">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block footer %}
+        {% include "base/footer.html" %}
+    {% endblock %}
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+    function lanzarConfeti() {
+        // Configuramos los colores según el bando elegido
+        const esGumi = document.querySelector('input[name="avatar"]:checked').value === 'gumi';
+        const colores = esGumi 
+            ? ['#fb7185', '#fda4af', '#fff1f2', '#ffffff'] // Gama Rosa
+            : ['#38bdf8', '#7dd3fc', '#f0f9ff', '#ffffff']; // Gama Azul
+
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0, colors: colores };
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        const interval = setInterval(function() {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 50 * (timeLeft / duration);
+            // Lanzamos confeti desde dos puntos laterales
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+            confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+        }, 250);
+    }
+
+    // Escuchamos cuando el formulario se envía
+    document.querySelector('form').addEventListener('submit', function(e) {
+        // Opcional: Si quieres que el confeti salga antes de que cambie la página
+        lanzarConfeti();
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    {% if messages %}
+        {% for message in messages %}
+            {% if 'logro_popup' in message.tags %}
+                Swal.fire({
+                    title: '¡LOGRO DESBLOQUEADO! 🏆',
+                    text: '{{ message }}',
+                    icon: 'success',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    background: '#fff0f5',
+                    color: '#ee2b6c',
+                });
+                // Si tienes la librería de confeti, actívala aquí
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Equipo de Magia | Gumi & Lumi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Lexend:wght@300..800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#fb7185",
+                        "pink-magic": "#ec4899",
+                        "pale-pink": "#fff1f2",
+                        "soft-rose": "#ffe4e6",
+                        "peach-pink": "#ffedd5",
+                        "vibrant-pink": "#f43f5e",
+                        "sky-blue": "#0ea5e9",
+                        "soft-blue": "#e0f2fe",
+                        "lila-main": "#a78bfa",
+                        "lila-dark": "#7c3aed",
+                    },
+                    fontFamily: {
+                        "fredoka": ["Fredoka", "sans-serif"],
+                        "lexend": ["Lexend", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer base {
+            body { @apply font-lexend bg-white text-gray-800 m-0 p-0 overflow-x-hidden; }
+        }
+
+        .magic-pattern {
+            background-image: radial-gradient(#fb7185 0.8px, transparent 0.8px);
+            background-size: 30px 30px;
+            @apply fixed inset-0 opacity-10 -z-10 pointer-events-none;
+        }
+
+        .card-team {
+            @apply bg-white border-2 border-slate-100 rounded-[3rem] p-8 transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl hover:shadow-primary/10 hover:border-primary/30;
+        }
+
+        .glass-header {
+            @apply bg-white/80 backdrop-blur-md sticky top-0 z-[100] w-full border-b-2 border-rose-50 px-6 md:px-20 py-4;
+        }
+
+        /* Efecto de Estela de Cursor */
+        .cursor-follower {
+            width: 20px;
+            height: 20px;
+            background: rgba(251, 113, 133, 0.3);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            transition: transform 0.1s ease-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+    </style>
+</head>
+<body>
+
+    <div class="magic-pattern"></div>
+    <div id="cursor" class="cursor-follower hidden md:block"></div>
+
+    {% load static %}
+<header class="sticky top-0 z-[100] w-full glass-header border-b-2 border-pink-soft px-6 md:px-20 py-4">
+    <div class="max-w-7xl mx-auto flex items-center"> 
+        
+        <a href="{% url 'landing' %}" class="group relative flex items-center gap-4 cursor-pointer">
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-lila-main via-blue-400 to-accent-pink rounded-2xl blur-lg opacity-40 group-hover:opacity-100 group-hover:rotate-180 transition-all duration-700"></div>
+                <div class="relative w-14 h-14 bg-gradient-to-br from-lila-main to-lila-dark rounded-2xl flex items-center justify-center text-white shadow-2xl transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 border-2 border-white/50">
+                    <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1">pets</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col">
+                <h2 class="text-3xl font-kids font-bold bg-gradient-to-r from-lila-dark via-lila-main to-blue-600 bg-clip-text text-transparent group-hover:tracking-wider transition-all duration-300">
+                    Gumi & Lumi
+                </h2>
+                <div class="flex items-center gap-1">
+                    <span class="h-[2px] w-4 bg-lila-main rounded-full"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-6 ml-16"> 
+            <a href="{% url 'sobrenosotros' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">favorite</span>
+                <span class="font-bold text-sm">Sobre nosotros</span>
+            </a>
+            <a href="{% url 'queaprender' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">star</span>
+                <span class="font-bold text-sm">¿Qué aprenderás?</span>
+            </a>
+            <a href="{% url 'desarrolladores' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">pending</span>
+                <span class="font-bold text-sm">Desarrolladores</span>
+            </a>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-8"> 
+            <a href="{% url 'login' %}" class="font-bold text-slate-500 hover:text-lila-dark transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-lila-main hover:after:w-full after:transition-all">
+                Iniciar sesión
+            </a>
+            <a href="{% url 'register' %}" class="group relative bg-pink-magic text-white px-8 py-3.5 rounded-full font-black text-sm shadow-xl hover:shadow-pink-magic/40 hover:-translate-y-1 active:scale-95 transition-all overflow-hidden">
+                <span class="relative z-10">¡Registrarse!</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_1s_infinite]"></div>
+            </a>
+        </div>
+        
+    </div>
+</header>
+
+    <main class="max-w-7xl mx-auto px-6 py-20">
+        
+        <div class="text-center mb-20 relative">
+            <span class="material-symbols-outlined absolute -top-10 left-10 text-primary/20 text-7xl animate-float">auto_awesome</span>
+            <h1 class="font-fredoka text-5xl md:text-7xl font-bold text-slate-800 mb-6">
+                Nuestro <span class="text-primary italic">Equipo de Magia</span>
+            </h1>
+            <p class="text-slate-500 text-xl max-w-2xl mx-auto">
+                Conoce a las mentes creativas detrás de cada línea de código y cada aventura.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            
+            <div class="card-team">
+                <div class="relative w-40 h-40 mx-auto mb-8">
+                    <div class="absolute inset-0 bg-pale-pink rounded-full rotate-6 border-2 border-dashed border-primary/40"></div>
+                    <div class="relative w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-inner">
+                        <span class="material-symbols-outlined text-[120px] text-primary" style="font-variation-settings: 'FILL' 1">face_3</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <h3 class="font-fredoka text-3xl font-bold text-slate-800 mb-1">Tiffany Bravo</h3>
+                    <p class="text-primary font-bold text-sm uppercase tracking-widest mb-6 italic">Diseñadora de Experiencias</p>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-slate-50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100">
+                            <span class="material-symbols-outlined text-primary">mail</span>
+                            <span class="text-xs font-bold text-slate-600">tibravosa@uide.edu.ec</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100">
+                            <span class="material-symbols-outlined text-primary">call</span>
+                            <span class="text-xs font-bold text-slate-600">+593 98 538 3123</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-team border-b-8 border-b-sky-blue/30">
+                <div class="relative w-40 h-40 mx-auto mb-8">
+                    <div class="absolute inset-0 bg-soft-blue rounded-full -rotate-6 border-2 border-dashed border-sky-blue/40"></div>
+                    <div class="relative w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-inner">
+                        <span class="material-symbols-outlined text-[120px] text-sky-blue" style="font-variation-settings: 'FILL' 1">face_6</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <h3 class="font-fredoka text-3xl font-bold text-slate-800 mb-1">Luis Chamba</h3>
+                    <p class="text-sky-blue font-bold text-sm uppercase tracking-widest mb-6 italic">Arquitecto de Código</p>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-slate-50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100">
+                            <span class="material-symbols-outlined text-sky-blue">mail</span>
+                            <span class="text-xs font-bold text-slate-600">luchambamo@uide.edu.ec</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100">
+                            <span class="material-symbols-outlined text-sky-blue">call</span>
+                            <span class="text-xs font-bold text-slate-600">+593 96 973 5507</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-team">
+                <div class="relative w-40 h-40 mx-auto mb-8">
+                    <div class="absolute inset-0 bg-peach-pink rounded-full rotate-12 border-2 border-dashed border-orange-300/40"></div>
+                    <div class="relative w-full h-full bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-inner">
+                        <span class="material-symbols-outlined text-[120px] text-primary" style="font-variation-settings: 'FILL' 1">face_2</span>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <h3 class="font-fredoka text-3xl font-bold text-slate-800 mb-1">María Morales</h3>
+                    <p class="text-orange-500 font-bold text-sm uppercase tracking-widest mb-6 italic">Guía Creativo</p>
+                    
+                    <div class="space-y-3">
+                        <div class="bg-slate-50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100">
+                            <span class="material-symbols-outlined text-orange-400">mail</span>
+                            <span class="text-xs font-bold text-slate-600">marmoralesor@uide.edu.ec</span>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-2xl flex items-center gap-3 border border-slate-100">
+                            <span class="material-symbols-outlined text-orange-400">call</span>
+                            <span class="text-xs font-bold text-slate-600">+593 96 324 5498</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-32 flex flex-wrap justify-center items-center gap-12 bg-white/50 py-12 rounded-[4rem] border-2 border-dashed border-slate-200">
+    
+    <div class="flex flex-col items-center group">
+        <div class="relative w-32 h-32 mb-4 group-hover:scale-110 transition-transform duration-300 animate-float">
+            <div class="absolute inset-0 bg-primary/10 rounded-full blur-xl"></div>
+            <img src="{% static 'core/img/lumipfp.png' %}" alt="Lumi" class="relative z-10 w-full h-full object-contain">
+        </div>
+        <span class="font-fredoka font-bold text-2xl text-primary">Lumi</span>
+    </div>
+
+    <div class="max-w-xs text-center px-4">
+        <div class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-slate-100 relative">
+            <p class="text-slate-500 font-medium italic text-sm">
+                "¡Todo el equipo está aquí para apoyarte en tu viaje mágico!"
+            </p>
+            <div class="absolute top-1/2 -left-2 w-4 h-4 bg-white border-l border-b border-slate-100 rotate-45 hidden md:block"></div>
+            <div class="absolute top-1/2 -right-2 w-4 h-4 bg-white border-r border-t border-slate-100 rotate-45 hidden md:block"></div>
+        </div>
+    </div>
+
+    <div class="flex flex-col items-center group">
+        <div class="relative w-32 h-32 mb-4 group-hover:scale-110 transition-transform duration-300 animate-float" style="animation-delay: 1s">
+            <div class="absolute inset-0 bg-sky-blue/10 rounded-full blur-xl"></div>
+            <img src="{% static 'core/img/gumipfp.png' %}" alt="Gumi" class="relative z-10 w-full h-full object-contain">
+        </div>
+        <span class="font-fredoka font-bold text-2xl text-sky-500">Gumi</span>
+    </div>
+
+</div>
+
+    </main>
+
+    <footer class="relative w-full bg-[#4c1d95] pt-20 pb-10 px-6 md:px-20 text-white rounded-t-[5rem] overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div class="absolute top-10 left-[10%] w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
+        <div class="absolute top-20 left-[80%] w-3 h-3 bg-lila-main rounded-full animate-bounce" style="animation-duration: 3s;"></div>
+        <div class="absolute bottom-10 left-[40%] w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-12 mb-12">
+            
+            <div class="group flex items-center gap-4 cursor-pointer">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-pink-magic blur-lg opacity-40 group-hover:opacity-100 transition-all"></div>
+                    <div class="relative w-14 h-14 bg-gradient-to-br from-pink-magic to-lila-dark rounded-2xl flex items-center justify-center shadow-xl transform group-hover:rotate-[360deg] duration-700 transition-all">
+                        <span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1">pets</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-kids font-bold text-3xl tracking-tight">Gumi & Lumi</span>
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{% url 'terminos' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-pink-300 group-hover:scale-125 transition-transform">category</span>
+                    <span class="font-bold text-sm">Términos</span>
+                </a>
+                <a href="{% url 'soporte' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-yellow-300 group-hover:scale-125 transition-transform">support</span>
+                    <span class="font-bold text-sm">Soporte</span>
+                </a>
+                <a href="{% url 'feedback_page' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-blue-300 group-hover:scale-125 transition-transform">sticker</span>
+                    <span class="font-bold text-sm">Comentarios</span>
+                </a>
+            </div>
+
+            <div class="flex gap-4">
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-pink-magic hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">chat_bubble</span>
+                </a>
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-lila-main hover:shadow-[0_0_20px_rgba(167,139,250,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">mail</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+        <div class="mt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 text-lila-soft/60">
+                <span class="material-symbols-outlined text-sm">favorite</span>
+                <p class="font-medium text-sm">© T.M.L ✨ <span class="text-white/80">Aprender es la magia que cambia el mundo.</span></p>
+            </div>
+            
+            <div class="flex items-center gap-3 px-4 py-2 bg-black/30 rounded-full border border-white/10">
+                <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-pink-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-blue-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-yellow-400"></div>
+                </div>
+                <span class="text-[10px] font-black text-green-400 uppercase tracking-widest animate-pulse">Servidores Activos</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+        }
+        .group-hover\:animate-wiggle:hover {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+    </style>
+</footer>
+
+    <span class="material-symbols-outlined fixed top-20 right-10 text-9xl text-slate-100 -z-20 rotate-12">rocket</span>
+    <span class="material-symbols-outlined fixed bottom-40 left-5 text-[120px] text-slate-100 -z-20 -rotate-45">extension</span>
+
+    <script>
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            cursor.style.display = 'block';
+        });
+    </script>
+</body>
+</html>

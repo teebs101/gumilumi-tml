@@ -1,0 +1,50 @@
+{% load static %}
+<header class="sticky top-0 z-[100] w-full glass-header border-b-2 border-pink-soft px-6 md:px-20 py-4">
+    <div class="max-w-7xl mx-auto flex items-center"> 
+        
+        <a href="{% url 'landing' %}" class="group relative flex items-center gap-4 cursor-pointer">
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-lila-main via-blue-400 to-accent-pink rounded-2xl blur-lg opacity-40 group-hover:opacity-100 group-hover:rotate-180 transition-all duration-700"></div>
+                <div class="relative w-14 h-14 bg-gradient-to-br from-lila-main to-lila-dark rounded-2xl flex items-center justify-center text-white shadow-2xl transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 border-2 border-white/50">
+                    <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1">pets</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col">
+                <h2 class="text-3xl font-kids font-bold bg-gradient-to-r from-lila-dark via-lila-main to-blue-600 bg-clip-text text-transparent group-hover:tracking-wider transition-all duration-300">
+                    Gumi & Lumi
+                </h2>
+                <div class="flex items-center gap-1">
+                    <span class="h-[2px] w-4 bg-lila-main rounded-full"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-6 ml-16"> 
+            <a href="{% url 'sobrenosotros' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">favorite</span>
+                <span class="font-bold text-sm">Sobre nosotros</span>
+            </a>
+            <a href="{% url 'queaprender' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">star</span>
+                <span class="font-bold text-sm">¿Qué aprenderás?</span>
+            </a>
+            <a href="{% url 'desarrolladores' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">pending</span>
+                <span class="font-bold text-sm">Desarrolladores</span>
+            </a>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-8"> 
+            <a href="{% url 'login' %}" class="font-bold text-slate-500 hover:text-lila-dark transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-lila-main hover:after:w-full after:transition-all">
+                Iniciar sesión
+            </a>
+            <a href="{% url 'register' %}" class="group relative bg-pink-magic text-white px-8 py-3.5 rounded-full font-black text-sm shadow-xl hover:shadow-pink-magic/40 hover:-translate-y-1 active:scale-95 transition-all overflow-hidden">
+                <span class="relative z-10">¡Registrarse!</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_1s_infinite]"></div>
+            </a>
+        </div>
+        
+    </div>
+</header>

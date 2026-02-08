@@ -1,0 +1,97 @@
+{% extends 'base/base.html' %}
+{% block title %}¿Cerrar sesión? | Gumi & Lumi{% endblock %}
+
+
+{% block content %}
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e9638f",
+                        "background-light": "#f0f7ff", // Soft pastel blue
+                        "background-dark": "#1a1e23",
+                        "soft-blue": "#d0e7ff",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1.5rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        /* Removing shadows and gradients as per instructions */
+        * {
+            box-shadow: none !important;
+            background-image: none !important;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display transition-colors duration-300">
+
+<main class="flex-1 flex flex-col items-center justify-center px-4 pb-12">
+<!-- Central Card Container -->
+<div class="max-w-[540px] w-full bg-white dark:bg-zinc-900 rounded-xl p-8 md:p-12 flex flex-col items-center text-center border-4 border-soft-blue dark:border-zinc-800">
+<!-- Lumi Mascot Illustration -->
+<div class="w-full max-w-[280px] aspect-square mb-6">
+<div class="w-full h-full bg-soft-blue dark:bg-zinc-800 rounded-full flex items-center justify-center overflow-hidden">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover" data-alt="Flat 2D illustration of Lumi the bunny waving goodbye with a sweet expression" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDB_sDnWtmJsZcjCXaQ6VAcc1k4ou9mb67xhptrKLf6wa2GilOh12xeoEKEsFkVqiCOQMzEjcEedoF2c-CzD2qxuZuuN3gNv84NqkHBxSDAaKenH1fMXLfm9fSa6aQUyqdixbykOHy18N4Ed6nbtwaPtoED7ySnplZrThCN11MF-QuW7s-dDz47NGkWx7H4hfGOKQP6qNsWsw1CBf0cQD9AKzFCtS6LOJnwO9HUvsMDMG1LAVXRhs1W6yO1CB4Ijnjeb58gAb5DyNs");'>
+</div>
+</div>
+</div>
+<!-- Headline Text -->
+<div class="space-y-2 mb-8">
+<h1 class="text-[#1b0e12] dark:text-white text-4xl font-extrabold tracking-tight">
+                    ¡Hasta pronto, <span class="text-primary">Alex</span>!
+                </h1>
+<p class="text-[#1b0e12]/60 dark:text-white/60 text-xl font-semibold">
+                    ¿Seguro que quieres salir?
+                </p>
+</div>
+<!-- Button Group -->
+<div class="w-full space-y-4 flex flex-col items-stretch">
+<!-- Stay Button -->
+<a href="{% url 'dashboard' %}">
+    <button class="w-full h-16 bg-soft-blue text-[#1b0e12] hover:bg-blue-200 transition-colors rounded-full text-lg font-extrabold flex items-center justify-center gap-3">
+        No, ¡quiero seguir aprendiendo!
+    </button>
+</a>
+
+<!-- Exit Button -->
+<a href="{% url 'landing' %}"
+   <button class="w-full h-16 bg-primary text-white hover:opacity-90 transition-opacity rounded-full text-lg font-extrabold flex items-center justify-center gap-3">
+    <span class="material-symbols-outlined font-bold">logout</span>
+    <span>Sí, salir</span>
+</a>
+</div>
+</div>
+</main>
+<!-- Footer decoration (Paws) -->
+<div class="fixed bottom-0 left-0 p-8 opacity-10 pointer-events-none hidden md:block">
+<span class="material-symbols-outlined text-8xl text-primary">pets</span>
+</div>
+<div class="fixed bottom-0 right-0 p-8 opacity-10 pointer-events-none hidden md:block">
+<span class="material-symbols-outlined text-8xl text-primary transform scale-x-[-1]">pets</span>
+</div>
+</body></html>
+{% endblock %}

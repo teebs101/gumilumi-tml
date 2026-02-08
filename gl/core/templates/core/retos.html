@@ -1,0 +1,235 @@
+{% extends 'base/base_private.html' %}
+{% load static %}
+
+{% block title %}Misiones y Retos | Gumi & Lumi{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style type="text/tailwindcss">
+    @layer components {
+        /* --- RESET DE CONTENEDOR --- */
+        .main-container {
+            @apply min-h-screen pb-20 relative overflow-hidden;
+            background: radial-gradient(circle at top right, #fff1f2, #fef9fb 50%, #f0f9ff 100%);
+            margin: -2rem -2rem -10rem -2rem; 
+            padding: 2rem;
+        }
+
+        /* --- TARJETAS DE RETOS (SÚPER EFECTOS) --- */
+        .reto-grid { 
+            @apply grid gap-10 relative z-10;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+        }
+
+        .flat-card {
+            @apply relative bg-white transition-all duration-500 flex flex-col p-8 overflow-hidden;
+            border-radius: 3rem;
+            border: 4px solid white;
+            box-shadow: 0 12px 0 0 #f1f5f9;
+        }
+        
+        /* Efecto de Elevación y Color */
+        .flat-card:hover {
+            @apply -translate-y-4 scale-[1.02];
+            box-shadow: 0 25px 50px -12px rgba(238, 43, 108, 0.15), 0 15px 0 0 #ffe4e6;
+            border-color: #ffdef0;
+        }
+
+        /* Brillo "Glossy" que recorre la tarjeta al pasar el mouse */
+        .flat-card::before {
+            content: '';
+            @apply absolute top-0 -left-full w-full h-full z-20 pointer-events-none;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.6),
+                transparent
+            );
+            transition: all 0.7s;
+        }
+        .flat-card:hover::before {
+            @apply left-full;
+        }
+
+        /* --- BOTÓN 3D --- */
+        .btn-3d-pink {
+            @apply w-full bg-[#ee2b6c] text-white py-5 rounded-[2rem] font-black text-sm transition-all flex items-center justify-center gap-3 uppercase tracking-widest relative z-30;
+            box-shadow: 0 8px 0 0 #b01e4d;
+        }
+        .btn-3d-pink:hover {
+            @apply brightness-110;
+        }
+        .btn-3d-pink:active {
+            @apply translate-y-[6px];
+            box-shadow: 0 2px 0 0 #b01e4d;
+        }
+
+        /* --- SIDEBAR --- */
+        .mision-diaria-container {
+            @apply bg-[#d6eef8] rounded-[4rem] p-10 pt-20 flex flex-col items-center relative border-8 border-white shadow-2xl mt-16;
+        }
+
+        .character-popout-sidebar {
+            @apply absolute -top-24 w-56 pointer-events-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.15)] z-20;
+        }
+
+        /* --- CURSOR ESTRELLAS --- */
+        .star-particle {
+            @apply fixed pointer-events-none z-[9999] select-none text-pink-400;
+            font-family: "Material Symbols Outlined";
+        }
+
+        /* ANIMACIONES */
+        @keyframes float-hero { 
+            0%, 100% { transform: translateY(0) rotate(0deg); } 
+            50% { transform: translateY(-30px) rotate(10deg); } 
+        }
+        .animate-hero { animation: float-hero 6s ease-in-out infinite; }
+    }
+</style>
+
+<div class="main-container">
+    <main class="max-w-7xl w-full mx-auto px-6 md:px-12 py-12 relative z-10">
+        <div class="mb-16">
+            <h2 class="text-7xl font-black text-[#4a2a36] mb-3 tracking-tighter">Retos Mágicos</h2>
+            <div class="h-2 w-24 bg-pink-500 rounded-full mb-4"></div>
+            <p class="text-[#7a4c60] font-bold text-xl opacity-80 italic">Supera desafíos y reclama tu recompensa ✨</p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-16">
+            <div class="flex-1">
+                <div class="reto-grid">
+                    {% for reto in retos %}
+                    <div class="flat-card {% if reto.id in completadas_ids %}opacity-50 grayscale hover:translate-y-0{% endif %}">
+                        <div class="absolute -top-1 -right-1 bg-gradient-to-br from-blue-500 to-indigo-600 text-white px-6 py-2 rounded-bl-[2rem] rounded-tr-[2.5rem] text-xs font-black shadow-lg z-10">
+                            +{{ reto.xp_recompensa }} XP
+                        </div>
+
+                        <div class="size-24 rounded-[2.5rem] flex items-center justify-center mb-8 relative border-2 border-white shadow-inner bg-{{ reto.color_fondo|default:'pink-100' }}">
+                            <span class="material-symbols-outlined text-6xl text-slate-700" style="font-variation-settings: 'FILL' 1">
+                                {{ reto.icono }}
+                            </span>
+                        </div>
+
+                        <h3 class="text-3xl font-black mb-3 text-[#4a2a36] tracking-tight">{{ reto.titulo }}</h3>
+                        <p class="text-[#7a4c60]/80 text-base mb-10 flex-1 font-bold leading-relaxed italic">
+                            "{{ reto.descripcion }}"
+                        </p>
+
+                        <div class="mt-auto">
+                            {% if reto.id in completadas_ids %}
+                                <div class="w-full bg-emerald-50 py-5 rounded-[2rem] flex items-center justify-center gap-2 border-4 border-emerald-100 text-emerald-600 font-black text-xs uppercase tracking-widest">
+                                    <span class="material-symbols-outlined">verified</span> ¡Misión Cumplida!
+                                </div>
+                            {% else %}
+                                <button onclick="iniciarReto('{{ reto.id }}', '{{ reto.tipo }}', '{{ reto.titulo }}', '{{ reto.descripcion }}', '{{ reto.opciones_o_respuesta }}')" class="btn-3d-pink">
+                                    <span class="material-symbols-outlined font-bold">rocket_launch</span> EMPEZAR AHORA
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="lg:w-96">
+                <div class="sticky top-20">
+                    <div class="mision-diaria-container">
+                        <img src="{% if user.profile.avatar == 'lumi' %}{% static 'core/img/lumi_icon.png' %}{% else %}{% static 'core/img/gumi_icon.png' %}{% endif %}" 
+                             class="character-popout-sidebar animate-hero">
+                        
+                        <div class="bg-white/90 backdrop-blur-md rounded-[3rem] p-8 shadow-xl border-2 border-white text-center w-full">
+                            <h4 class="text-2xl font-black text-slate-800 mb-3 uppercase tracking-tighter">Guía de Aventura</h4>
+                            <p class="text-slate-500 text-sm font-bold leading-relaxed mb-6 italic">
+                                "¡Hola! Cada reto te da energía mágica para subir de rango."
+                            </p>
+                            <div class="py-4 px-4 bg-blue-50 rounded-2xl border-2 border-blue-100 font-black text-blue-700 text-xs">
+                                RANGO ACTUAL: {{ user.profile.rango.nombre.upper }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // --- ESTRELLITAS EN EL MOUSE ---
+    document.addEventListener('mousemove', (e) => {
+        if (Math.random() > 0.85) {
+            createStar(e.clientX, e.clientY);
+        }
+    });
+
+    function createStar(x, y) {
+        const star = document.createElement('span');
+        star.className = 'star-particle material-symbols-outlined';
+        star.innerText = 'grade'; 
+        
+        const size = Math.floor(Math.random() * 15) + 10;
+        const color = ['#f472b6', '#60a5fa', '#fbbf24'][Math.floor(Math.random()*3)];
+        
+        star.style.fontSize = size + 'px';
+        star.style.color = color;
+        star.style.left = (x - size/2) + 'px'; 
+        star.style.top = (y - size/2) + 'px';
+        
+        document.body.appendChild(star);
+        
+        star.animate([
+            { transform: 'translate(0,0) scale(1) rotate(0deg)', opacity: 1 },
+            { transform: `translate(${(Math.random()-0.5)*80}px, ${(Math.random()-0.5)*80}px) scale(0) rotate(180deg)`, opacity: 0 }
+        ], {
+            duration: 1000,
+            easing: 'ease-out'
+        }).onfinish = () => star.remove();
+    }
+
+    // --- LÓGICA DE RETOS ---
+    function iniciarReto(id, tipo, titulo, descripcion, extra) {
+        if (tipo === 'terminal') {
+            window.location.href = "/terminal/practica/?reto_id=" + id;
+        } else {
+            Swal.fire({
+                title: `<span class="font-black text-2xl">${titulo}</span>`,
+                text: descripcion,
+                input: tipo === 'pregunta' ? 'text' : 'radio',
+                inputOptions: tipo === 'quiz' ? formatQuizOptions(extra) : {},
+                confirmButtonText: '¡Validar! ✨',
+                confirmButtonColor: '#ee2b6c',
+                showCancelButton: true,
+                customClass: { popup: 'rounded-[3rem] border-8 border-rose-100' }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) enviarValidacion(id, result.value);
+            });
+        }
+    }
+
+    function formatQuizOptions(extra) {
+        let options = {};
+        extra.split(',').forEach(opt => { options[opt.trim()] = opt.trim(); });
+        return options;
+    }
+
+    function enviarValidacion(id, respuesta) {
+        fetch(`/validar-reto/${id}/?respuesta=${encodeURIComponent(respuesta)}`, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                Swal.fire({ title: '¡LOGRADO! 🏆', text: data.message, icon: 'success', confirmButtonColor: '#ee2b6c' })
+                .then(() => location.reload());
+            } else {
+                Swal.fire('¡Ups! 🐻', data.message, 'error');
+            }
+        });
+    }
+</script>
+
+{% endblock %}

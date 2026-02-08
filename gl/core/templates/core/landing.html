@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Gumi & Lumi | La Aventura Comienza 🐾</title>
+    
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Lexend:wght@300;400;600;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "pink-magic": "#ec4899",
+                        "pink-soft": "#fce7f3",
+                        "lila-main": "#a78bfa",
+                        "lila-soft": "#f5f3ff",
+                        "lila-dark": "#7c3aed",
+                        "magic-dark": "#1e1b4b"
+                    },
+                    fontFamily: {
+                        "kids": ["Fredoka", "sans-serif"],
+                        "display": ["Lexend", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        /* --- ESTILOS DE "GAMIFICACIÓN" --- */
+        .bento-card {
+            background: white;
+            border-radius: 3rem;
+            border: 2px solid #f1f5f9;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            position: relative;
+        }
+        .bento-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(167, 139, 250, 0.2);
+            border-color: #a78bfa;
+        }
+
+        @keyframes float-img {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
+        .animate-img { animation: float-img 5s ease-in-out infinite; }
+
+        .magic-icon {
+            position: absolute; z-index: 0; pointer-events: none;
+            animation: icon-bg-float 18s linear infinite; opacity: 0.3;
+        }
+        @keyframes icon-bg-float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-200px) rotate(360deg); }
+        }
+
+        /* Estrellas del mouse (mantenidas de la anterior) */
+        .sparkle {
+            position: fixed; width: 6px; height: 6px; border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            animation: sparkle-out 0.8s ease-out forwards;
+        }
+        @keyframes sparkle-out { to { transform: scale(3); opacity: 0; } }
+
+        .glass-header {
+    background: #ffffff !important; /* Blanco puro */
+    opacity: 1 !important;
+    backdrop-filter: none !important;
+}
+/* Estilos para el Tren de Reinos */
+.train-path-container {
+    position: relative;
+    padding: 100px 0;
+}
+
+.train-node {
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.train-node:hover {
+    transform: scale(1.1) translateY(-10px);
+    z-index: 50;
+}
+
+/* Animación de la línea punteada */
+.dash-animation {
+    stroke-dasharray: 15;
+    animation: dash 30s linear infinite;
+}
+
+@keyframes dash {
+    from { stroke-dashoffset: 1000; }
+    to { stroke-dashoffset: 0; }
+}
+
+.floating-label {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.adventure-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 3rem;
+    padding: 60px 20px;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Ocultar la barra de scroll para que se vea más limpio */
+.adventure-scroll::-webkit-scrollbar {
+    height: 8px;
+}
+.adventure-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.adventure-scroll::-webkit-scrollbar-thumb {
+    background: #a78bfa;
+    border-radius: 10px;
+}
+
+.train-card {
+    flex: 0 0 300px; /* Tamaño fijo para que no se encojan */
+    transition: all 0.4s ease;
+}
+/* Contenedor Principal con Bordes Redondeados */
+.adventure-island {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+    border-radius: 4rem;
+    padding: 4rem 2rem;
+    box-shadow: inset 0 0 50px rgba(167, 139, 250, 0.05), 0 40px 100px -20px rgba(0,0,0,0.1);
+    border: 2px solid white;
+}
+
+/* Scroll Horizontal Suave */
+.train-wrapper {
+    display: flex;
+    overflow-x: auto;
+    padding: 60px 20px;
+    gap: 2.5rem;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+}
+.train-wrapper::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+/* Efecto de Onda en las Tarjetas */
+.train-card:nth-child(even) { transform: translateY(40px); }
+.train-card:nth-child(odd) { transform: translateY(-20px); }
+
+.train-card {
+    flex: 0 0 280px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.train-card:hover {
+    transform: scale(1.1) translateY(0) !important;
+    z-index: 10;
+}
+    </style>
+</head>
+
+<body class="bg-[#fcfaff] font-display text-slate-800">
+
+    <div class="magic-bg-container">
+        <span class="material-symbols-outlined magic-icon text-5xl" style="top: 10%; left: 5%; animation-delay: 0s; color: #ec48ce;">auto_fix_high</span>
+        <span class="material-symbols-outlined magic-icon text-7xl" style="top: 25%; left: 80%; animation-delay: 2s; color: #8e29b3;">star</span>
+        <span class="material-symbols-outlined magic-icon text-4xl" style="top: 45%; left: 15%; animation-delay: 2s; color: #ec4899;">code</span>
+        <span class="material-symbols-outlined magic-icon text-6xl" style="top: 70%; left: 85%; animation-delay: 1s; color: #60a5fa;">rocket_launch</span>
+        <span class="material-symbols-outlined magic-icon text-5xl" style="top: 85%; left: 40%; animation-delay: 2s; color: #f260fa;">terminal</span>
+        <span class="material-symbols-outlined magic-icon text-4xl" style="top: 15%; left: 50%; animation-delay: 3s; color: #9f48ec;">pets</span>
+        <span class="material-symbols-outlined magic-icon text-8xl" style="top: 60%; left: 5%; animation-delay: 1s; opacity: 0.1;">deployed_code</span>
+        <span class="material-symbols-outlined magic-icon text-5xl" style="top: 35%; left: 90%; animation-delay: 3s; color: #4b70d6;">favorite</span>
+        <span class="material-symbols-outlined magic-icon text-6xl" style="top: 90%; left: 10%; animation-delay: 1s; color: #4521a1;">bolt</span>
+        <span class="material-symbols-outlined magic-icon text-4xl" style="top: 55%; left: 50%; animation-delay: 2s; color: #48c0ec;">science</span>
+    </div>
+
+   <header class="sticky top-0 z-[100] w-full glass-header border-b-2 border-pink-soft px-6 md:px-20 py-4">
+    <div class="max-w-7xl mx-auto flex items-center"> 
+        
+        <a href="{% url 'landing' %}" class="group relative flex items-center gap-4 cursor-pointer">
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-lila-main via-blue-400 to-accent-pink rounded-2xl blur-lg opacity-40 group-hover:opacity-100 group-hover:rotate-180 transition-all duration-700"></div>
+                <div class="relative w-14 h-14 bg-gradient-to-br from-lila-main to-lila-dark rounded-2xl flex items-center justify-center text-white shadow-2xl transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 border-2 border-white/50">
+                    <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1">pets</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col">
+                <h2 class="text-3xl font-kids font-bold bg-gradient-to-r from-lila-dark via-lila-main to-blue-600 bg-clip-text text-transparent group-hover:tracking-wider transition-all duration-300">
+                    Gumi & Lumi
+                </h2>
+                <div class="flex items-center gap-1">
+                    <span class="h-[2px] w-4 bg-lila-main rounded-full"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-6 ml-16"> 
+            <a href="{% url 'sobrenosotros' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">favorite</span>
+                <span class="font-bold text-sm">Sobre nosotros</span>
+            </a>
+            <a href="{% url 'queaprender' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">star</span>
+                <span class="font-bold text-sm">¿Qué aprenderás?</span>
+            </a>
+            <a href="{% url 'desarrolladores' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">pending</span>
+                <span class="font-bold text-sm">Desarrolladores</span>
+            </a>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-8"> 
+            <a href="{% url 'login' %}" class="font-bold text-slate-500 hover:text-lila-dark transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-lila-main hover:after:w-full after:transition-all">
+                Iniciar sesión
+            </a>
+            <a href="{% url 'register' %}" class="group relative bg-pink-magic text-white px-8 py-3.5 rounded-full font-black text-sm shadow-xl hover:shadow-pink-magic/40 hover:-translate-y-1 active:scale-95 transition-all overflow-hidden">
+                <span class="relative z-10">¡Registrarse!</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_1s_infinite]"></div>
+            </a>
+        </div>
+        
+    </div>
+</header>
+
+    <main class="relative py-20 lg:py-32 flex items-center justify-center pt-20 overflow-hidden">
+        <span class="material-symbols-outlined magic-icon text-pink-300 text-6xl top-[20%] left-[15%]">favorite</span>
+        <span class="material-symbols-outlined magic-icon text-pink-300 text-4xl top-[50%] right-[10%]">star</span>
+        <span class="material-symbols-outlined magic-icon text-blue-300 text-8xl bottom-[20%] left-[5%]">rocket</span>
+        
+        
+
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div class="lg:col-span-7 text-center lg:text-left z-10">
+                <h1 class="text-5xl md:text-8xl font-kids font-bold leading-[1] mb-8">
+                    Tu código es tu <br>
+<span class="relative">
+  <span class="relative z-10 text-white px-4 bg-pink-magic rounded-2xl rotate-3 inline-block">
+    poder
+  </span>
+</span>
+
+                </h1>
+                <p class="text-xl md:text-2xl text-slate-500 font-medium mb-10 max-w-2xl">
+                    No solo aprendes Python.  
+Te conviertes en un Aprendiz del Código y ayudas a restaurar el equilibrio del Mundo de Cristal junto a Gumi y Lumi.
+
+                </p>
+                <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+                    <a href="{% url 'register' %}" class="px-10 py-5 bg-lila-dark text-white text-xl font-black rounded-3xl shadow-2xl hover:scale-105 transition-all flex items-center gap-3">
+                        Comenzar la aventura <span class="material-symbols-outlined">auto_fix_high</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="lg:col-span-5 relative">
+                <div class="animate-img relative z-10">
+                    <img src="{% static 'core/img/mascotas.png' %}" alt="Mascotas" class="w-full h-auto drop-shadow-[0_50px_50px_rgba(236,72,153,0.3)]">
+                </div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-pink-100 to-lila-100 rounded-full blur-3xl -z-10 opacity-60"></div>
+            </div>
+        </div>
+    </main>
+
+    <section class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-6xl font-kids font-bold text-slate-800">¿Qué herramientas llevará tu aventura? 🎒</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="md:col-span-2 md:row-span-2 bento-card p-10 flex flex-col justify-between bg-gradient-to-br from-white to-pink-50">
+                <div>
+                    <div class="w-14 h-14 bg-pink-magic text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-pink-200">
+                        <span class="material-symbols-outlined text-3xl">psychology</span>
+                    </div>
+                    <h3 class="text-3xl font-kids font-bold mb-4">Tus guías del viaje</h3>
+                    <p class="text-slate-500 text-lg leading-relaxed">Cuando el camino se vuelve confuso, Gumi y Lumi aparecen para ayudarte a entender el Código paso a paso, sin miedo a equivocarte.</p>
+                </div>
+                <div class="mt-8 pt-8 border-t border-pink-100 flex items-center gap-4">
+                    <p class="text-slate-600 text-lg leading-relaxed mb-6">
+            "Gumi no solo corrige tu código, te enseña a pensar como un programador real usando pistas mágicas."
+        </p>
+                
+                </div>
+            </div>
+
+            <div class="md:col-span-2 bento-card p-8 bg-[#1e293b] text-white">
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                </div>
+                <code class="text-blue-300 font-mono text-lg">print("¡Hola Mundo!")</code>
+                <h3 class="text-xl font-kids font-bold mt-6">Terminal de Hechizos</h3>
+                <p class="text-slate-400 text-sm mt-2">Escribe Código real en tu navegador y observa cómo tus acciones cambian el Mundo de Cristal.</p>
+            </div>
+
+            <div class="bento-card p-8 bg-lila-soft">
+                <span class="material-symbols-outlined text-5xl text-lila-dark mb-4">military_tech</span>
+                <h3 class="text-xl font-kids font-bold">Insignias</h3>
+                <p class="text-slate-500 text-sm mt-2">Colecciona recuerdos de cada reino que ayudes a restaurar durante tu viaje.</p>
+            </div>
+
+            <div class="bento-card p-8 bg-blue-50">
+                <span class="material-symbols-outlined text-5xl text-blue-500 mb-4">map</span>
+                <h3 class="text-xl font-kids font-bold">Brújula de Cristal</h3>
+                <p class="text-slate-500 text-sm mt-2">Visualiza tu progreso a través de los 7 Reinos de Python.</p>
+            </div>
+        </div>
+    </section>
+
+   <section class="py-20 px-4 md:px-10 bg-[#fcfaff]">
+    <div class="max-w-7xl mx-auto adventure-island relative overflow-hidden">
+        
+        <div class="absolute top-10 left-10 opacity-20 text-6xl material-symbols-outlined text-lila-main">cloud</div>
+        <div class="absolute bottom-10 right-10 opacity-20 text-6xl material-symbols-outlined text-pink-magic">auto_awesome</div>
+
+        <div class="flex flex-col md:flex-row justify-between items-center px-10 mb-10 relative z-10">
+            <div>
+                <h2 class="text-4xl font-kids font-bold text-slate-800">El camino del Aprendiz 🚂</h2>
+                <p class="text-slate-500 font-medium">Cada parada es un reino del Mundo de Cristal que aprenderás a restaurar. Desliza para explorar los 7 Reinos mágicos</p>
+            </div>
+            <div class="flex items-center gap-3 bg-white/50 px-6 py-2 rounded-full border border-white mt-4 md:mt-0">
+                <span class="text-sm font-black text-lila-dark uppercase tracking-widest">Desliza</span>
+                <span class="material-symbols-outlined animate-bounce">arrow_forward</span>
+            </div>
+        </div>
+
+        <div class="train-wrapper">
+    
+    <div class="train-card">
+        <div class="bg-white p-8 rounded-[3rem] border-8 border-emerald-400 shadow-xl h-full flex flex-col">
+            <span class="realm-badge bg-emerald-100 text-emerald-600">Reino 01</span>
+            <span class="material-symbols-outlined text-6xl text-emerald-500 mb-4">badge</span>
+            <h3 class="font-kids font-bold text-2xl mb-2">El Valle de los Nombres</h3>
+            <p class="text-sm text-slate-500">Donde aprenderás que todo en el código tiene un nombre y un propósito.</p>
+        </div>
+    </div>
+
+    <div class="train-card">
+        <div class="bg-white p-8 rounded-[3rem] border-8 border-orange-400 shadow-xl h-full flex flex-col">
+            <span class="realm-badge bg-orange-100 text-orange-600">Reino 02</span>
+            <span class="material-symbols-outlined text-6xl text-orange-500 mb-4">alt_route</span>
+            <h3 class="font-kids font-bold text-2xl mb-2">El Pantano de las Decisiones</h3>
+            <p class="text-sm text-slate-500">Aprende a elegir el camino correcto usando la lógica del destino.</p>
+        </div>
+    </div>
+
+    <div class="train-card">
+        <div class="bg-white p-8 rounded-[3rem] border-8 border-cyan-400 shadow-xl h-full flex flex-col">
+            <span class="realm-badge bg-cyan-100 text-cyan-600">Reino 03</span>
+            <span class="material-symbols-outlined text-6xl text-cyan-500 mb-4">hearing</span>
+            <h3 class="font-kids font-bold text-2xl mb-2">La Cueva de los Ecos</h3>
+            <p class="text-sm text-slate-500">Repite tus hechizos hasta que resuenen en todo el Mundo de Cristal.</p>
+        </div>
+    </div>
+
+    <div class="train-card">
+        <div class="bg-white p-8 rounded-[3rem] border-8 border-lila-main shadow-xl h-full flex flex-col">
+            <span class="realm-badge bg-lila-soft text-lila-dark">Reino 04</span>
+            <span class="material-symbols-outlined text-6xl text-lila-dark mb-4">description</span>
+            <h3 class="font-kids font-bold text-2xl mb-2">El Bosque de los Pergaminos</h3>
+            <p class="text-sm text-slate-500">Organiza tus conocimientos en listas y colecciones mágicas.</p>
+        </div>
+    </div>
+
+    <div class="train-card">
+        <div class="bg-white p-8 rounded-[3rem] border-8 border-pink-400 shadow-xl h-full flex flex-col">
+            <span class="realm-badge bg-pink-50 text-pink-500">Reino 05</span>
+            <span class="material-symbols-outlined text-6xl text-pink-500 mb-4">science</span>
+            <h3 class="font-kids font-bold text-2xl mb-2">La Forja de las Pociones</h3>
+            <p class="text-sm text-slate-500">Mezcla ingredientes de código para crear funciones reutilizables.</p>
+        </div>
+    </div>
+
+    <div class="train-card">
+        <div class="bg-gradient-to-tr from-indigo-600 to-purple-800 p-8 rounded-[3rem] border-8 border-white shadow-2xl h-full flex flex-col text-white">
+            <span class="realm-badge bg-white/20 text-white">Reto Final</span>
+            <span class="material-symbols-outlined text-7xl mb-4 animate-pulse">fort</span>
+            <h3 class="font-kids font-bold text-2xl mb-2">El Castillo de los Desafíos Finales</h3>
+            <p class="text-sm text-white/90">Demuestra todo lo aprendido y libera el poder total de Python.</p>
+        </div>
+    </div>
+
+</div>
+    </div>
+</section>
+
+<style>
+    .animate-spin-slow { animation: spin 8s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+
+<style>
+    .animate-spin-slow {
+        animation: spin 10s linear infinite;
+    }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style> 
+
+    <footer class="relative w-full bg-[#4c1d95] pt-20 pb-10 px-6 md:px-20 text-white rounded-t-[5rem] overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div class="absolute top-10 left-[10%] w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
+        <div class="absolute top-20 left-[80%] w-3 h-3 bg-lila-main rounded-full animate-bounce" style="animation-duration: 3s;"></div>
+        <div class="absolute bottom-10 left-[40%] w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-12 mb-12">
+            
+            <div class="group flex items-center gap-4 cursor-pointer">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-pink-magic blur-lg opacity-40 group-hover:opacity-100 transition-all"></div>
+                    <div class="relative w-14 h-14 bg-gradient-to-br from-pink-magic to-lila-dark rounded-2xl flex items-center justify-center shadow-xl transform group-hover:rotate-[360deg] duration-700 transition-all">
+                        <span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1">pets</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-kids font-bold text-3xl tracking-tight">Gumi & Lumi</span>
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{% url 'terminos' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-pink-300 group-hover:scale-125 transition-transform">category</span>
+                    <span class="font-bold text-sm">Términos</span>
+                </a>
+                <a href="{% url 'soporte' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-yellow-300 group-hover:scale-125 transition-transform">support</span>
+                    <span class="font-bold text-sm">Soporte</span>
+                </a>
+                <a href="{% url 'feedback_page' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-blue-300 group-hover:scale-125 transition-transform">sticker</span>
+                    <span class="font-bold text-sm">Comentarios</span>
+                </a>
+            </div>
+
+            <div class="flex gap-4">
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-pink-magic hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">chat_bubble</span>
+                </a>
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-lila-main hover:shadow-[0_0_20px_rgba(167,139,250,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">mail</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+        <div class="mt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 text-lila-soft/60">
+                <span class="material-symbols-outlined text-sm">favorite</span>
+                <p class="font-medium text-sm">© T.M.L ✨ <span class="text-white/80">Aprender es la magia que cambia el mundo.</span></p>
+            </div>
+            
+            <div class="flex items-center gap-3 px-4 py-2 bg-black/30 rounded-full border border-white/10">
+                <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-pink-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-blue-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-yellow-400"></div>
+                </div>
+                <span class="text-[10px] font-black text-green-400 uppercase tracking-widest animate-pulse">Servidores Activos</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+        }
+        .group-hover\:animate-wiggle:hover {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+    </style>
+</footer>
+
+    <script>
+        // Efecto de chispas al mover el mouse
+        document.addEventListener('mousemove', function(e) {
+            if (Math.random() > 0.15) return;
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = e.clientX + 'px';
+            sparkle.style.top = e.clientY + 'px';
+            const colors = ['#ec4899', '#a78bfa', '#60a5fa', '#fde047'];
+            sparkle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 800);
+        });
+    </script>
+
+</body>
+</html>

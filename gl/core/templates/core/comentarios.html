@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Feedback Mágico | Gumi & Lumi</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Lexend:wght@300..800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "magic-purple": "#a78bfa",
+                        "magic-pink": "#f472b6",
+                        "pink-magic": "#ec4899",
+                        "pink-soft": "#fdf2f8",
+                        "lila-main": "#a78bfa",
+                        "lila-dark": "#7c3aed",
+                        "dark-deep": "#2e1065",
+                        "primary": "#30abe8",
+                        "mint": "#6ee7b7"
+                    },
+                    fontFamily: {
+                        "kids": ["Fredoka", "sans-serif"],
+                        "lexend": ["Lexend", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer base {
+            body { @apply font-lexend bg-[#fdfcff] text-slate-700 overflow-x-hidden; }
+        }
+
+        /* Fondo con burbujas decorativas */
+        .bg-cute {
+            background: radial-gradient(circle at 10% 20%, rgba(236, 72, 153, 0.05) 0%, transparent 20%),
+                        radial-gradient(circle at 90% 80%, rgba(48, 171, 232, 0.05) 0%, transparent 20%);
+        }
+
+        .glass-header {
+            @apply bg-white/70 backdrop-blur-2xl sticky top-0 z-[100] w-full border-b-2 border-pink-soft px-6 md:px-20 py-4;
+        }
+
+        /* Tarjeta ultra cute */
+        .card-cute {
+            @apply bg-white border-[3px] border-slate-50 rounded-[3.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.04)] transition-all duration-500;
+        }
+
+        .card-cute:hover {
+            @apply shadow-[0_25px_60px_rgba(167,139,250,0.1)] -translate-y-2;
+        }
+
+        /* Botones de emoción estilo "burbuja" */
+        .feeling-btn {
+            @apply flex flex-col items-center gap-2 p-4 rounded-[2.5rem] transition-all duration-300 grayscale hover:grayscale-0 hover:bg-pink-soft hover:scale-110 active:scale-95;
+        }
+
+        .feeling-btn.active {
+            @apply grayscale-0 bg-white border-[3px] border-pink-magic shadow-[0_10px_20px_rgba(236,72,153,0.2)] scale-110;
+        }
+
+        /* Animación de entrada de comentario */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5) translateY(50px); }
+            70% { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop { animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        .no-scrollbar::-webkit-scrollbar { height: 6px; }
+        .no-scrollbar::-webkit-scrollbar-thumb { @apply bg-pink-magic/20 rounded-full; }
+    </style>
+</head>
+<body class="bg-cute">
+
+    {% load static %}
+<header class="sticky top-0 z-[100] w-full glass-header border-b-2 border-pink-soft px-6 md:px-20 py-4">
+    <div class="max-w-7xl mx-auto flex items-center"> 
+        
+        <a href="{% url 'landing' %}" class="group relative flex items-center gap-4 cursor-pointer">
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-lila-main via-blue-400 to-accent-pink rounded-2xl blur-lg opacity-40 group-hover:opacity-100 group-hover:rotate-180 transition-all duration-700"></div>
+                <div class="relative w-14 h-14 bg-gradient-to-br from-lila-main to-lila-dark rounded-2xl flex items-center justify-center text-white shadow-2xl transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300 border-2 border-white/50">
+                    <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1">pets</span>
+                </div>
+            </div>
+            
+            <div class="flex flex-col">
+                <h2 class="text-3xl font-kids font-bold bg-gradient-to-r from-lila-dark via-lila-main to-blue-600 bg-clip-text text-transparent group-hover:tracking-wider transition-all duration-300">
+                    Gumi & Lumi
+                </h2>
+                <div class="flex items-center gap-1">
+                    <span class="h-[2px] w-4 bg-lila-main rounded-full"></span>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-6 ml-16"> 
+            <a href="{% url 'sobrenosotros' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">favorite</span>
+                <span class="font-bold text-sm">Sobre nosotros</span>
+            </a>
+            <a href="{% url 'queaprender' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">star</span>
+                <span class="font-bold text-sm">¿Qué aprenderás?</span>
+            </a>
+            <a href="{% url 'desarrolladores' %}" class="group flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-pink-soft bg-white text-pink-magic hover:bg-pink-magic hover:text-white hover:shadow-xl hover:shadow-pink-200 hover:-translate-y-1.5 transition-all duration-300">
+                <span class="material-symbols-outlined text-xl group-hover:rotate-180 transition-transform duration-500">pending</span>
+                <span class="font-bold text-sm">Desarrolladores</span>
+            </a>
+        </nav>
+
+        <div class="ml-auto flex items-center gap-8"> 
+            <a href="{% url 'login' %}" class="font-bold text-slate-500 hover:text-lila-dark transition-colors relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[2px] after:bg-lila-main hover:after:w-full after:transition-all">
+                Iniciar sesión
+            </a>
+            <a href="{% url 'register' %}" class="group relative bg-pink-magic text-white px-8 py-3.5 rounded-full font-black text-sm shadow-xl hover:shadow-pink-magic/40 hover:-translate-y-1 active:scale-95 transition-all overflow-hidden">
+                <span class="relative z-10">¡Registrarse!</span>
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:animate-[shimmer_1s_infinite]"></div>
+            </a>
+        </div>
+        
+    </div>
+</header>
+
+    <main class="font-kids max-w-6xl mx-auto px-6 py-12">
+        
+        <div class="text-center mb-16 space-y-4">
+            <div class="inline-block px-6 py-2 bg-white rounded-full shadow-sm border border-pink-soft text-pink-magic font-black text-xs uppercase tracking-[0.3em] mb-4">
+                ✨ Muro de Magia ✨
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black text-dark-deep leading-tight">
+                ¿Te has divertido <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-magic via-lila-main to-primary">aprendiendo hoy?</span>
+            </h1>
+            <p class="text-slate-400 text-xl font-medium max-w-2xl mx-auto">
+                Tu opinión es la semilla que hace crecer nuestro bosque de código. ¡Dile algo lindo a Gumi y Lumi! 🌸
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <div class="lg:col-span-8">
+                <div class="card-cute p-8 md:p-12 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-pink-soft rounded-bl-[5rem] -z-10 opacity-50"></div>
+                    
+                    <h3 class="text-2xl font-black text-dark-deep mb-8 flex items-center gap-3">
+                        <span class="text-3xl">💝</span> ¡Deja tu huella!
+                    </h3>
+
+                    <div class="flex justify-between gap-2 mb-10 bg-slate-50/50 p-4 rounded-[3rem]">
+                        <button onclick="selectFeeling(this)" class="feeling-btn active"><span class="text-5xl">🤩</span><span class="text-[9px] font-black uppercase">Amé todo</span></button>
+                        <button onclick="selectFeeling(this)" class="feeling-btn"><span class="text-5xl">😊</span><span class="text-[9px] font-black uppercase">Muy feliz</span></button>
+                        <button onclick="selectFeeling(this)" class="feeling-btn"><span class="text-5xl">💖</span><span class="text-[9px] font-black uppercase">Encantado</span></button>
+                        <button onclick="selectFeeling(this)" class="feeling-btn"><span class="text-5xl">🧸</span><span class="text-[9px] font-black uppercase">Abrazo</span></button>
+                    </div>
+
+                    <form id="feedbackForm" class="space-y-6">
+                        <div class="group relative">
+                            <textarea id="commentText" required 
+                                class="w-full min-h-[180px] rounded-[3rem] border-[3px] border-slate-50 bg-slate-50/30 p-8 text-lg font-medium outline-none focus:border-pink-magic/20 focus:bg-white transition-all resize-none shadow-inner group-hover:shadow-md"
+                                placeholder="Escribe tu mensaje mágico aquí..."></textarea>
+                            <span class="absolute bottom-6 right-8 text-4xl opacity-20 group-hover:opacity-100 transition-opacity">✍️</span>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                            <button type="submit" class="group relative bg-pink-magic text-white font-black py-6 px-16 rounded-[2.5rem] text-xl shadow-[0_15px_30px_rgba(236,72,153,0.3)] hover:scale-105 active:scale-95 transition-all overflow-hidden">
+                                <span class="relative z-10 flex items-center gap-3">ENVIAR MAGIA <span class="material-symbols-outlined font-black">send</span></span>
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <div class="card-cute p-8 bg-gradient-to-br from-primary/10 to-transparent border-none text-center">
+                    <div class="w-20 h-20 bg-white rounded-3xl shadow-lg mx-auto mb-6 flex items-center justify-center animate-bounce">
+                        <span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1">auto_awesome</span>
+                    </div>
+                    <p class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-2">Puntos de Regalo</p>
+                    <h4 class="text-3xl font-black text-dark-deep mb-4">+50 Estrellas</h4>
+                    <p class="text-slate-400 text-sm">Por cada comentario ayudas a que otros niños aprendan mejor.</p>
+                </div>
+
+                <div class="card-cute p-8 flex items-center gap-4 bg-white">
+                    <div class="text-4xl">🐱‍💻</div>
+                    <div class="text-left">
+                        <p class="font-black text-dark-deep">¿Sabías qué?</p>
+                        <p class="text-xs text-slate-400">Python es el lenguaje favorito de los osos programadores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-32 space-y-10">
+            <div class="flex items-center gap-4">
+                <h3 class="text-4xl font-black text-dark-deep">Muro de la Amistad</h3>
+                <div class="h-[3px] flex-1 bg-gradient-to-r from-pink-soft to-transparent rounded-full"></div>
+            </div>
+            
+            <div id="commentWall" class="flex gap-8 overflow-x-auto no-scrollbar pb-10 px-4">
+                <div class="flex-none w-[320px] card-cute p-8 flex flex-col justify-between h-[340px] border-b-[10px] border-primary/20">
+                    <div class="text-5xl mb-4 text-left">⭐</div>
+                    <p class="text-slate-600 font-bold text-lg italic leading-relaxed">"¡Gumi es el mejor profesor del mundo! Sus desafíos de miel son mis favoritos."</p>
+                    <div class="flex items-center gap-4 mt-6 pt-6 border-t border-pink-soft">
+                        <div class="w-12 h-12 bg-pink-soft rounded-2xl flex items-center justify-center text-2xl shadow-inner">🐻</div>
+                        <div>
+                            <p class="font-black text-dark-deep text-sm tracking-tight">Cody_Gamer</p>
+                            <p class="text-[9px] font-black text-primary uppercase tracking-widest">Maestro Python</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="relative w-full bg-[#4c1d95] pt-20 pb-10 px-6 md:px-20 text-white rounded-t-[5rem] overflow-hidden">
+    <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
+        <div class="absolute top-10 left-[10%] w-2 h-2 bg-pink-400 rounded-full animate-pulse"></div>
+        <div class="absolute top-20 left-[80%] w-3 h-3 bg-lila-main rounded-full animate-bounce" style="animation-duration: 3s;"></div>
+        <div class="absolute bottom-10 left-[40%] w-2 h-2 bg-blue-400 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-12 mb-12">
+            
+            <div class="group flex items-center gap-4 cursor-pointer">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-pink-magic blur-lg opacity-40 group-hover:opacity-100 transition-all"></div>
+                    <div class="relative w-14 h-14 bg-gradient-to-br from-pink-magic to-lila-dark rounded-2xl flex items-center justify-center shadow-xl transform group-hover:rotate-[360deg] duration-700 transition-all">
+                        <span class="material-symbols-outlined text-3xl text-white" style="font-variation-settings: 'FILL' 1">pets</span>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-kids font-bold text-3xl tracking-tight">Gumi & Lumi</span>
+                    <span class="text-[10px] font-black text-pink-300 uppercase tracking-[0.3em]">Code Academy</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="{% url 'terminos' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-pink-300 group-hover:scale-125 transition-transform">category</span>
+                    <span class="font-bold text-sm">Términos</span>
+                </a>
+                <a href="{% url 'soporte' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-yellow-300 group-hover:scale-125 transition-transform">support</span>
+                    <span class="font-bold text-sm">Soporte</span>
+                </a>
+                <a href="{% url 'feedback_page' %}" class="group flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 hover:-translate-y-2 btn-pop">
+                    <span class="material-symbols-outlined text-blue-300 group-hover:scale-125 transition-transform">sticker</span>
+                    <span class="font-bold text-sm">Comentarios</span>
+                </a>
+            </div>
+
+            <div class="flex gap-4">
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-pink-magic hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">chat_bubble</span>
+                </a>
+                <a href="#" class="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 hover:bg-lila-main hover:shadow-[0_0_20px_rgba(167,139,250,0.5)] transition-all group btn-pop">
+                    <span class="material-symbols-outlined text-2xl group-hover:animate-wiggle">mail</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+        <div class="mt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-2 text-lila-soft/60">
+                <span class="material-symbols-outlined text-sm">favorite</span>
+                <p class="font-medium text-sm">© T.M.L ✨ <span class="text-white/80">Aprender es la magia que cambia el mundo.</span></p>
+            </div>
+            
+            <div class="flex items-center gap-3 px-4 py-2 bg-black/30 rounded-full border border-white/10">
+                <div class="flex -space-x-2">
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-pink-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-blue-400"></div>
+                    <div class="w-6 h-6 rounded-full border-2 border-[#4c1d95] bg-yellow-400"></div>
+                </div>
+                <span class="text-[10px] font-black text-green-400 uppercase tracking-widest animate-pulse">Servidores Activos</span>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            75% { transform: rotate(-15deg); }
+        }
+        .group-hover\:animate-wiggle:hover {
+            animation: wiggle 0.5s ease-in-out infinite;
+        }
+    </style>
+</footer>
+
+    <script>
+        function selectFeeling(btn) {
+            document.querySelectorAll('.feeling-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        const form = document.getElementById('feedbackForm');
+        const wall = document.getElementById('commentWall');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const text = document.getElementById('commentText').value;
+            const emoji = document.querySelector('.feeling-btn.active span:first-child').innerText;
+            
+            const newComment = document.createElement('div');
+            // Colores aleatorios para el borde inferior
+            const colors = ['border-pink-magic/20', 'border-primary/20', 'border-magic-purple/20', 'border-mint/20'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            newComment.className = `flex-none w-[320px] card-cute p-8 flex flex-col justify-between h-[340px] border-b-[10px] ${randomColor} animate-pop`;
+            
+            newComment.innerHTML = `
+                <div class="text-5xl mb-4 text-left">${emoji}</div>
+                <p class="text-slate-600 font-bold text-lg italic leading-relaxed">"${text}"</p>
+                <div class="flex items-center gap-4 mt-6 pt-6 border-t border-pink-soft">
+                    <div class="w-12 h-12 bg-pink-soft rounded-2xl flex items-center justify-center text-2xl shadow-inner">👤</div>
+                    <div>
+                        <p class="font-black text-dark-deep text-sm tracking-tight">Pequeño Héroe</p>
+                        <p class="text-[9px] font-black text-pink-magic uppercase tracking-widest">Acaba de publicar</p>
+                    </div>
+                </div>
+            `;
+
+            wall.prepend(newComment);
+            
+            // Confeti ultra cute
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ec4899', '#a78bfa', '#30abe8', '#6ee7b7']
+            });
+
+            form.reset();
+            wall.scrollTo({ left: 0, behavior: 'smooth' });
+        });
+    </script>
+
+</body>
+</html>

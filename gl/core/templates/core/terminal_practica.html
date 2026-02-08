@@ -1,0 +1,239 @@
+{% extends 'base/base_private.html' %}
+{% load static %}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+{% block title %}{% if reto %}{{ reto.titulo }}{% else %}Terminal de Práctica{% endif %} | Gumi & Lumi{% endblock %}
+
+{% block content %}
+<div class="bg-[#fff9fb] min-h-screen relative overflow-hidden p-4 md:p-8">
+    
+    <main class="relative z-10 max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-8 space-y-6">
+            
+            <div class="rainbow-card rounded-[2.5rem] p-6 bg-white shadow-xl flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="bg-primary/10 text-primary p-3 rounded-2xl">
+                        <span class="material-symbols-outlined text-3xl font-variation-fill">
+                            {% if reto %}extension{% else %}terminal{% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">
+                            {% if reto %}Reto Mágico Detectado{% else %}Laboratorio de Hechizos{% endif %}
+                        </p>
+                        <h2 class="text-3xl font-black text-slate-800">
+                            {% if reto %}{{ reto.titulo }}{% else %}Práctica Libre{% endif %}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card bg-[#1e293b] rounded-[3rem] p-8 shadow-2xl border-[10px] border-slate-800 flex flex-col min-h-[480px] relative">
+                <div id="editor" class="flex-1 text-2xl rounded-xl" style="height: 300px;">print("¡Gumi, encontré la solución!")</div>
+                
+                <div class="mt-6 p-6 bg-black/30 rounded-3xl border border-slate-700/30">
+                    <div id="consola-output" class="text-slate-300 font-mono text-xl min-h-[1.5em]">
+                        <span class="text-primary">>>></span> <span class="opacity-70 italic">Escribe tu código y lánzalo...</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="boton-ejecutar" onclick="ejecutarPython()" 
+                class="w-full h-20 bg-primary hover:brightness-110 active:scale-95 transition-all rounded-[2rem] shadow-[0_10px_0_0_#0bb561] flex items-center justify-center gap-4">
+                <span class="material-symbols-outlined !text-4xl text-white">bolt</span>
+                <span class="text-2xl font-black text-white uppercase italic">¡LANZAR CÓDIGO!</span>
+            </button>
+        </div>
+
+        <aside class="lg:col-span-4 space-y-6">
+            
+            <div class="glass-card p-8 border-b-8 border-indigo-100 flex flex-col gap-6">
+                <div>
+                    <h3 class="text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-indigo-500 font-variation-fill">book</span>
+                        Instrucciones
+                    </h3>
+                    <div class="p-5 rounded-[2rem] bg-indigo-50/50 border-2 border-indigo-100">
+                        <p class="text-indigo-900 font-medium text-sm">
+                            {% if reto %}{{ reto.descripcion }}{% else %}¡Explora el mundo de Python!{% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                {% if reto %}
+                <div class="bg-soft-pink/30 p-6 rounded-[2.5rem] border-4 border-dashed border-pink-200">
+                    <label class="block text-pink-600 font-black text-xs uppercase mb-3 ml-2">¿Encontraste la bandera?</label>
+                    <div class="flex flex-col gap-3">
+                        <input type="text" id="flag-input" 
+                            placeholder="GUMI{...}" 
+                            class="w-full px-5 py-4 rounded-2xl border-none shadow-inner bg-white text-slate-700 font-bold focus:ring-4 focus:ring-pink-200 transition-all">
+                        
+                        <button id="btn-validar-flag" onclick="validarFlagReto()"
+                            class="w-full py-4 bg-[#ee2b6c] text-white font-black rounded-2xl shadow-[0_5px_0_0_#b01e4d] hover:translate-y-1 hover:shadow-none transition-all">
+                            ENTREGAR BANDERA
+                        </button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if reto %}
+            <div class="bg-yellow-100 rounded-[2.5rem] p-6 border-4 border-white shadow-sm flex items-center gap-4">
+                <div class="bg-white p-3 rounded-2xl shadow-sm">
+                    <span class="material-symbols-outlined text-yellow-600 font-black">database</span>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-yellow-700 uppercase">Recompensa</p>
+                    <p class="text-xl font-black text-yellow-900">+{{ reto.xp_recompensa }} Mágicos</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="burbuja-pista" class="hidden mt-4">
+    <button onclick="mostrarPistaMágica()" 
+        class="w-full flex items-center justify-between p-4 bg-indigo-600 text-white rounded-2xl shadow-lg hover:bg-indigo-700 transition-all border-b-4 border-indigo-800">
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined animate-pulse">lightbulb</span>
+            <span class="font-black text-sm uppercase italic">¿Necesitas una pista?</span>
+        </div>
+        <span class="material-symbols-outlined">arrow_forward_ios</span>
+    </button>
+</div>
+
+        </aside>
+    </main>
+</div>
+
+<style type="text/tailwindcss">
+    @layer components {
+        .glass-card { @apply bg-white/90 backdrop-blur-sm border-4 border-white shadow-xl rounded-[3rem]; }
+        .rainbow-card {
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(120deg, #ff85a1, #bae6fd, #ffeb3b, #a5d6a7, #ff85a1) border-box;
+            border: 6px solid transparent; background-size: 200% auto; animation: rainbow-border 8s linear infinite;
+        }
+    }
+    @keyframes rainbow-border { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // 1. Configuración Inicial y Variables Globales
+    const banderaDelReto = "{% if reto %}{{ reto.opciones_o_respuesta }}{% else %}{% endif %}";
+    let intentosFallidos = 0;
+    let pyodide;
+
+    // 2. Inicializar Editor Ace
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/tomorrow_night_eighties");
+    editor.session.setMode("ace/mode/python");
+    editor.setOptions({ fontSize: "18px", showPrintMargin: false });
+
+    // 3. Inicializar Pyodide
+    async function initPython() { 
+        pyodide = await loadPyodide(); 
+        console.log("Pyodide cargado con éxito 🐍");
+    }
+    initPython();
+
+    // 4. Ejecutar Código Python
+    async function ejecutarPython() {
+        const code = editor.getValue();
+        const outputDiv = document.getElementById('consola-output');
+        
+        outputDiv.innerHTML = `<span class="text-primary">>>></span> <span class="opacity-70 animate-pulse">Lanzando hechizo...</span>`;
+
+        try {
+            await pyodide.runPythonAsync(`
+import sys
+import io
+sys.stdout = io.StringIO()
+            `);
+            await pyodide.runPythonAsync(code);
+            let stdout = pyodide.runPython("sys.stdout.getvalue()");
+            
+            outputDiv.innerHTML = `<span class="text-green-400">>>></span> <pre class="inline text-white font-mono">${stdout || 'Hechizo ejecutado (usa print() para ver resultados).'}</pre>`;
+        } catch (err) {
+            outputDiv.innerHTML = `<span class="text-red-400">>>> Error de Magia:</span> <pre class="inline text-red-200 font-mono">${err.message}</pre>`;
+        }
+    }
+
+    // 5. Mostrar Pista (Solo después de 3 fallos)
+    function mostrarPistaMágica() {
+        const pista = "{{ reto.pista|escapejs }}";
+        if (pista) {
+            Swal.fire({
+                title: '💡 Pista del Oráculo',
+                text: pista,
+                icon: 'info',
+                confirmButtonColor: '#6366f1',
+                confirmButtonText: '¡Entendido!'
+            });
+        }
+    }
+
+    // 6. Validar Bandera (FUNCIÓN UNIFICADA)
+    function validarFlagReto() {
+        const flagInput = document.getElementById('flag-input');
+        const flagUser = flagInput.value.trim();
+        const retoId = "{{ reto.id }}"; 
+
+        if (!flagUser) {
+            Swal.fire('¡Escribe algo!', 'La caja de bandera está vacía, mor.', 'warning');
+            return;
+        }
+
+        fetch(`/validar-reto/${retoId}/?respuesta=${encodeURIComponent(flagUser)}`, {
+            method: 'GET',
+            headers: { 
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // EFECTOS DE VICTORIA
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+
+                Swal.fire({
+                    title: '¡CÓDIGO CORRECTO! 🏆',
+                    text: data.message,
+                    icon: 'success',
+                    timer: 2500,
+                    showConfirmButton: false
+                }).then(() => {
+                    window.location.href = "{% url 'retos' %}";
+                });
+            } else {
+                // LÓGICA DE FALLO Y PISTA
+                intentosFallidos++;
+                if (intentosFallidos >= 3) {
+                    const burbuja = document.getElementById('burbuja-pista');
+                    burbuja.classList.remove('hidden');
+                    burbuja.classList.add('animate-bounce');
+                }
+                
+                Swal.fire({
+                    title: 'Nop 🐻',
+                    text: data.message || 'Esa no es la bandera...',
+                    icon: 'error',
+                    confirmButtonColor: '#ee2b6c'
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            Swal.fire('Error Técnico', 'Revisa la conexión con el servidor.', 'error');
+        });
+    }
+</script>
+{% endblock %}

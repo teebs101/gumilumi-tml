@@ -1,0 +1,407 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Lección: {{ lesson.title }} | Gumi & Lumi</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ee2b6c",
+                        "soft-pink": "#fff0f5",
+                        "soft-blue": "#e6f4f1",
+                    },
+                    fontFamily: { "display": ["Fredoka", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer base {
+            body { font-family: 'Fredoka', sans-serif; @apply bg-[#fff9fb] text-slate-700; }
+        }
+
+        /* 1. Forzamos que todos los iconos dentro del nav estén rellenos */
+header nav .material-symbols-outlined, 
+.navbar .material-symbols-outlined {
+    font-variation-settings: 
+        'FILL' 1,   /* 1 para relleno, 0 para contorno */
+        'wght' 400, /* Grosor del icono */
+        'GRAD' 0, 
+        'opsz' 24 !important;
+}
+
+/* 2. Tu código anterior actualizado para que los bordes y fondos combinen */
+header nav a, .nav-item {
+    opacity: 1 !important;
+    font-weight: 800 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px !important;
+    border-radius: 18px !important; /* Más redondeado, más cute */
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* Colores con fondo sutil para que el icono relleno resalte más */
+header nav a:nth-child(1), .nav-inicio { color: #2563eb !important; background: #eff6ff !important; border: 2px solid #dbeafe !important; }
+header nav a:nth-child(2), .nav-cursos { color: #b45309 !important; background: #fffbeb !important; border: 2px solid #fef3c7 !important; }
+header nav a:nth-child(3), .nav-terminal { color: #be185d !important; background: #fdf2f8 !important; border: 2px solid #fce7f3 !important; }
+header nav a:nth-child(4), .nav-logros { color: #15803d !important; background: #f0fdf4 !important; border: 2px solid #dcfce7 !important; }
+header nav a:nth-child(5), .nav-chat { color: #db2777 !important; background: #fff1f2 !important; border: 2px solid #fdf2f8 !important; }
+header nav a:nth-child(6), .nav-cuenta { color: #1d4ed8 !important; background: #eff6ff !important; border: 2px solid #dbeafe !important; }
+
+/* 3. Animación de rebote en el icono al pasar el mouse */
+header nav a:hover .material-symbols-outlined {
+    transform: scale(1.2) rotate(5deg);
+    transition: transform 0.2s ease;
+}
+
+
+        /* --- EFECTO RAINBOW SUTIL --- */
+        .rainbow-card {
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(120deg, #ff85a1, #bae6fd, #ffeb3b, #a5d6a7, #ff85a1) border-box;
+            border: 6px solid transparent;
+            background-size: 200% auto;
+            animation: rainbow-border 8s linear infinite;
+        }
+
+        @keyframes rainbow-border {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .glass-card { 
+            @apply bg-white/90 backdrop-blur-sm border-4 border-white shadow-xl rounded-[3rem]; 
+        }
+        
+        .quiz-option { 
+            @apply transition-all duration-300 border-4 border-slate-50 bg-white hover:border-primary/20 rounded-2xl p-4 text-left flex items-center gap-3 w-full mb-3; 
+        }
+
+        /* Iconos Flotantes de Fondo */
+        .floating-icon { 
+            @apply absolute pointer-events-none select-none opacity-20; 
+            animation: float-around linear infinite; 
+            font-variation-settings: 'FILL' 1; 
+        }
+        
+        @keyframes float-around {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Partículas del Cursor */
+        .magic-particle { 
+            position: fixed; pointer-events: none; z-index: 9999; 
+            animation: particle-explosion 1s ease-out forwards; 
+            font-variation-settings: 'FILL' 1; 
+        }
+        
+        @keyframes particle-explosion {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--tw-tx), var(--tw-ty)) scale(1.2) rotate(var(--tw-tr)); opacity: 0; }
+        }
+
+        @layer components {
+    .glass-card { 
+        @apply bg-white/90 backdrop-blur-sm border-4 border-white shadow-xl rounded-[3rem] 
+               transition-all duration-500 ease-out; 
+    }
+    
+    /* Efecto de levitación y color al pasar el mouse */
+    .glass-card:hover {
+        @apply -translate-y-3 shadow-2xl shadow-primary/10 border-primary/10;
+        background: linear-gradient(to bottom right, rgba(255,255,255,1), rgba(255, 240, 245, 0.8));
+    }
+
+    /* Efecto especial para la tarjeta Rainbow al pasar el mouse */
+    .rainbow-card:hover {
+        @apply -translate-y-2;
+        box-shadow: 0 20px 40px -15px rgba(238, 43, 108, 0.2);
+    }
+}
+    </style>
+</head>
+
+<body class="min-h-screen relative overflow-x-hidden">
+    <div id="magic-background" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <header class="flex items-center justify-between border-b border-[#e8edf3] px-10 py-3 bg-white">
+    
+    <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-primary text-3xl">school</span>
+        <h2 class="text-xl font-bold">Gumi & Lumi</h2>
+    </div>
+
+<nav class="flex items-center gap-3">
+
+{% with current=request.resolver_match.url_name %}
+
+<a href="{% url 'dashboard' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'dashboard' %}
+      bg-soft-blue border-blue-500 text-blue-900 shadow-md
+   {% else %}
+      border-soft-blue text-soft-blue hover:bg-soft-blue hover:bg-pastel-blue hover:text-primary hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">home</span>
+   Inicio
+</a>
+
+<a href="{% url 'courses' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'courses' %}
+      bg-pastel-yellow border-star-yellow text-[#7a5c00] shadow-md
+   {% else %}
+      border-star-yellow text-[#a07800]  hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">school</span>
+   Cursos
+</a>
+
+{% if proxima_leccion.id %}
+    <a href="{% url 'lesson_terminal' proxima_leccion.id %}" 
+       class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+       {% if current == 'lesson_terminal' %}
+          bg-slate-700 border-slate-900 text-white shadow-md
+       {% else %}
+          border-slate-800 bg-slate-800 text-white hover:bg-slate-700 hover:-translate-y-1 hover:scale-105
+       {% endif %}">
+        <span class="material-symbols-outlined">terminal</span> 
+        Misión
+    </a>
+{% else %}
+    <a href="{% url 'terminal_libre' %}" 
+       class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+       {% if current == 'terminal_libre' %}
+          bg-slate-700 border-slate-900 text-white shadow-md
+       {% else %}
+          border-slate-800 bg-slate-800 text-white hover:bg-slate-700 hover:-translate-y-1 hover:scale-105
+       {% endif %}">
+        <span class="material-symbols-outlined">terminal</span> 
+        Terminal
+    </a>
+{% endif %}
+
+<a href="{% url 'logros' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'logros' %}
+      bg-pastel-green border-hill-green text-green-900 shadow-md
+   {% else %}
+      border-hill-green text-green-700 hover:bg-pastel-green hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">emoji_events</span>
+   Logros
+</a>
+
+<a href="{% url 'chat' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'chat' %}
+      bg-soft-pink border-primary-pink text-pink-900 shadow-md
+   {% else %}
+      border-soft-pink text-pink-700 hover:bg-soft-pink hover:text-pink-900 hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">chat</span>
+   Chat
+</a>
+
+<a href="{% url 'account' %}"
+   class="group flex items-center gap-2 px-5 py-2 rounded-full border-2 font-bold transition-all duration-300
+   {% if current == 'account' %}
+      bg-soft-blue border-primary text-blue-900 shadow-md
+   {% else %}
+      border-soft-blue text-blue-700 hover:bg-soft-blue hover:text-blue-900 hover:-translate-y-1 hover:scale-105
+   {% endif %}">
+   <span class="material-symbols-outlined">person</span>
+   Cuenta
+</a>
+
+{% endwith %}
+</nav>
+
+    <div class="flex items-center gap-3 bg-slate-50 p-2 rounded-[1.5rem]">
+        <div class="size-9 rounded-full bg-white border-2 shadow-sm overflow-hidden p-1">
+            {% if user.profile.avatar == 'lumi' %}
+                <img src="{% static 'core/img/lumi_icon.png' %}" class="w-full h-full object-contain">
+            {% else %}
+                <img src="{% static 'core/img/gumi_icon.png' %}" class="w-full h-full object-contain">
+            {% endif %}
+        </div>
+        <div class="flex-1">
+            <p class="text-xs font-black truncate">{{ user.username }}</p>
+            <p class="text-[9px] font-bold text-slate-400 uppercase">Nivel {{ user.profile.level }}</p>
+        </div>
+        <a href="{% url 'logout' %}">
+            <span class="material-symbols-outlined text-slate-300 hover:text-red-400">logout</span>
+        </a>
+    </div>
+</header>
+
+    <main class="relative z-10 max-w-7xl mx-auto px-6 py-10 space-y-10">
+    
+    <div class="rainbow-card rounded-[3rem] p-10 md:p-14 text-center bg-white shadow-2xl transition-transform duration-500 hover:scale-[1.01]">
+        <span class="px-5 py-1.5 bg-soft-pink text-primary rounded-full text-xs font-black uppercase tracking-widest mb-4 inline-block">
+            Misión de Aprendizaje
+        </span>
+        <h1 class="text-5xl md:text-7xl font-black text-slate-800 tracking-tight">{{ lesson.title }}</h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+        
+        <div class="lg:col-span-8 space-y-10">
+            <article class="glass-card relative overflow-hidden border-b-[12px] border-primary/5">
+                <div class="absolute top-0 left-0 right-0 h-10 bg-slate-50/50 border-b-2 border-white flex items-center px-6 gap-2">
+                    <div class="size-3 rounded-full bg-red-300"></div>
+                    <div class="size-3 rounded-full bg-yellow-300"></div>
+                    <div class="size-3 rounded-full bg-green-300"></div>
+                    <span class="ml-4 text-[10px] font-black text-slate-300 uppercase tracking-widest italic">GumiEditor_v1.py</span>
+                </div>
+
+                <div class="p-12 md:p-20 pt-20 md:pt-24 relative z-10">
+                    <div class="prose prose-pink prose-xl max-w-none text-slate-600 font-medium leading-relaxed">
+                        {{ lesson.content|linebreaks }}
+                    </div>
+                </div>
+            </article>
+
+            <section class="glass-card p-10 border-l-[12px] border-l-primary flex items-center gap-8 hover:bg-gradient-to-r hover:from-white hover:to-primary/5">
+                <div class="bg-primary p-5 rounded-3xl shadow-lg rotate-3 group-hover:rotate-6 transition-transform">
+                    <span class="material-symbols-outlined text-white text-5xl font-variation-fill">lightbulb</span>
+                </div>
+                <div>
+                    <p class="text-xs font-black text-primary uppercase tracking-widest mb-1 opacity-60">Resumen Mágico</p>
+                    <h3 class="text-2xl md:text-4xl font-black text-slate-800 italic leading-tight">
+                        "{{ lesson.subtitle_teoria }}"
+                    </h3>
+                </div>
+            </section>
+        </div>
+
+        <div class="lg:col-span-4 space-y-8 sticky top-32">
+    
+    <section class="glass-card p-8 border-b-8 border-yellow-200 hover:border-yellow-400">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="bg-yellow-400 p-2 rounded-xl text-white shadow-md">
+                <span class="material-symbols-outlined font-variation-fill">quiz</span>
+            </div>
+            <h2 class="text-xl font-black text-slate-800">Desafío Rápido</h2>
+        </div>
+
+        <div id="quiz-container" class="space-y-4">
+            <p class="text-lg font-bold text-slate-700 leading-snug">{{ lesson.quiz_pregunta }}</p>
+            
+            <div id="options-grid" class="space-y-3">
+                <button onclick="checkAnswer(this, false)" class="quiz-option group">
+                    <div class="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black group-hover:bg-primary group-hover:text-white transition-all text-sm">A</div>
+                    <code class="text-sm font-bold text-slate-600 group-hover:text-primary transition-colors">{{ lesson.opcion_incorrecta_1 }}</code>
+                </button>
+
+                <button onclick="checkAnswer(this, true)" class="quiz-option group">
+                    <div class="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black group-hover:bg-primary group-hover:text-white transition-all text-sm">B</div>
+                    <code class="text-sm font-bold text-slate-600 group-hover:text-primary transition-colors">{{ lesson.opcion_correcta }}</code>
+                </button>
+
+                <button onclick="checkAnswer(this, false)" class="quiz-option group">
+                    <div class="size-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black group-hover:bg-primary group-hover:text-white transition-all text-sm">C</div>
+                    <code class="text-sm font-bold text-slate-600 group-hover:text-primary transition-colors">{{ lesson.opcion_incorrecta_2 }}</code>
+                </button>
+            </div>
+
+            <div id="quiz-feedback" class="hidden p-4 rounded-2xl text-center font-bold text-sm transition-all duration-300"></div>
+        </div>
+    </section>
+
+    <div class="glass-card p-8 bg-soft-blue/20 hover:bg-soft-blue/40 border-blue-50 text-center">
+        <img src="/static/core/img/gumi_laptop.png" class="w-32 mx-auto mb-4 animate-bounce" style="animation-duration: 4s;">
+        <div class="bg-white p-5 rounded-2xl shadow-sm relative border-2 border-blue-100">
+            <div class="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-blue-100 rotate-45"></div>
+            <p class="text-sm font-bold text-blue-600 leading-relaxed italic">
+                "¡Si respondes bien, Lumi encenderá los motores del cohete!" ✨
+            </p>
+        </div>
+    </div>
+
+    <div class="pt-4">
+        <a id="btn-terminal" href="{% url 'lesson_terminal' lesson.id %}" 
+           class="opacity-40 pointer-events-none group flex w-full items-center justify-center gap-4 bg-slate-800 py-6 rounded-[2.5rem] text-white text-2xl font-black shadow-2xl transition-all hover:scale-105 active:scale-95 border-b-8 border-slate-900">
+            <span class="material-symbols-outlined text-3xl group-hover:rotate-12 transition-transform">rocket_launch</span>
+            ¡A PRACTICAR!
+        </a>
+        <p id="lock-msg" class="text-center text-[10px] font-black text-slate-300 uppercase mt-4 tracking-widest">
+            Responde el desafío para desbloquear
+        </p>
+    </div>
+
+</div>
+    </div>
+</main>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // Lógica de Iconos Flotantes
+        const bg = document.getElementById('magic-background');
+        const icons = ['favorite', 'star', 'terminal', 'bolt', 'auto_awesome'];
+        for (let i = 0; i < 20; i++) {
+            const s = document.createElement('span');
+            s.classList.add('material-symbols-outlined', 'floating-icon');
+            s.innerText = icons[Math.floor(Math.random() * icons.length)];
+            s.style.left = Math.random() * 100 + '%';
+            s.style.animationDuration = 12 + Math.random() * 20 + 's';
+            s.style.animationDelay = -Math.random() * 20 + 's';
+            s.style.fontSize = 20 + Math.random() * 30 + 'px';
+            s.style.color = ['#ee2b6c', '#ff85a1', '#bae6fd'][Math.floor(Math.random()*3)];
+            bg.appendChild(s);
+        }
+
+        // Partículas del Cursor (Estilo Registro)
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.2) return;
+            const p = document.createElement('span');
+            p.classList.add('material-symbols-outlined', 'magic-particle');
+            p.innerText = 'grade';
+            p.style.color = ['#ff85a1', '#ee2b6c', '#bae6fd', '#ffd700'][Math.floor(Math.random()*4)];
+            p.style.left = e.clientX + 'px'; 
+            p.style.top = e.clientY + 'px';
+            p.style.fontSize = Math.random() * 15 + 10 + 'px';
+            p.style.setProperty('--tw-tx', `${(Math.random()-0.5)*160}px`);
+            p.style.setProperty('--tw-ty', `${(Math.random()-0.5)*160}px`);
+            p.style.setProperty('--tw-tr', `${(Math.random()-0.5)*600}deg`);
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 1000);
+        });
+
+        // Lógica de respuesta del Quiz
+        function checkAnswer(btn, isCorrect) {
+            const f = document.getElementById('quiz-feedback');
+            const b = document.getElementById('btn-terminal');
+            document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('border-green-400', 'bg-green-50', 'border-red-400', 'bg-red-50'));
+            
+            if (isCorrect) {
+                btn.classList.add('border-green-400', 'bg-green-50');
+                f.innerHTML = "¡EXCELENTE TRABAJO! ✨";
+                f.className = "p-4 rounded-2xl text-center font-bold text-sm bg-green-100 text-green-700 block animate-bounce mt-4";
+                b.classList.remove('opacity-40', 'pointer-events-none', 'bg-slate-800');
+                b.classList.add('bg-primary', 'animate-pulse');
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.8 }, colors: ['#ee2b6c', '#ffd700'] });
+            } else {
+                btn.classList.add('border-red-400', 'bg-red-50');
+                f.innerHTML = "¡Casi! Inténtalo de nuevo 🐻";
+                f.className = "p-4 rounded-2xl text-center font-bold text-sm bg-red-100 text-red-700 block mt-4";
+            }
+        }
+    </script>
+</body>
+</html>

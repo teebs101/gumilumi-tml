@@ -1,0 +1,378 @@
+{% extends 'base/base_private.html' %}
+{% load static %}
+
+{% block title %}Misión Mágica | {{ lesson.title }}{% endblock %}
+
+{% block content %}
+<div class="bg-[#fff9fb] min-h-screen relative overflow-hidden p-4 md:p-8">
+    
+    <div id="magic-background" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <main class="relative z-10 max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-8 space-y-8">
+            
+            <div class="rainbow-card rounded-[2.5rem] p-6 md:p-8 bg-white shadow-xl flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="bg-primary/10 text-primary p-3 rounded-2xl">
+                        <span class="material-symbols-outlined text-3xl">auto_stories</span>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Misión de Código</p>
+                        <h2 class="text-3xl font-black text-slate-800">{{ lesson.title }}</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card bg-[#1e293b] rounded-[3rem] p-8 shadow-2xl border-[10px] border-slate-800 flex flex-col min-h-[550px] relative">
+                <div class="flex items-center gap-2 mb-6 border-b border-slate-700/50 pb-4">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                    <span class="text-slate-500 text-xs font-mono ml-4 italic flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">terminal</span> hechizo.py
+                    </span>
+                </div>
+
+                <div id="editor" class="flex-1 text-2xl rounded-xl" style="height: 350px;">print("¡Hola Gumi!")</div>
+                
+                <div class="mt-6 p-6 bg-black/30 rounded-3xl border border-slate-700/30">
+                    <div id="consola-output" class="text-slate-300 font-mono text-xl min-h-[1.5em]">
+                        <span class="text-primary animate-pulse">>>></span> 
+                        <span class="opacity-70 italic">Esperando tu hechizo...</span>
+                    </div>
+                </div>
+
+                <div class="absolute -right-12 -bottom-10 hidden xl:block pointer-events-none">
+                    <img src="{% static 'core/img/gumi_laptop.png' %}" class="w-56 h-56 object-contain float-anim drop-shadow-2xl">
+                </div>
+            </div>
+
+            <button id="boton-ejecutar" onclick="ejecutarPython()" 
+                class="w-full h-24 bg-primary hover:brightness-110 active:scale-95 transition-all rounded-[2.5rem] shadow-[0_12px_0_0_#b21d4d] flex items-center justify-center gap-4">
+                <span class="material-symbols-outlined !text-5xl text-white">magic_button</span>
+                <span class="text-3xl font-black text-white uppercase italic tracking-tighter">¡LANZAR HECHIZO!</span>
+            </button>
+        </div>
+
+        <aside class="lg:col-span-4 space-y-6">
+            
+            <div class="glass-card p-8 border-b-8 border-indigo-100">
+                <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary font-variation-fill">task_alt</span>
+                    Objetivos
+                </h3>
+                <div id="check-objetivo" class="flex items-center gap-4 p-5 rounded-[2rem] bg-slate-50 border-2 border-slate-100 transition-all duration-500">
+                    <div id="circulo-check" class="size-10 rounded-full border-4 border-slate-200 flex items-center justify-center bg-white">
+                        <span class="material-symbols-outlined text-white text-xl">check</span>
+                    </div>
+                    <p class="text-slate-500 font-black leading-tight text-sm uppercase">
+                        {{ lesson.objetivo_1|default:"Escribe el código correctamente" }}
+                    </p>
+                </div>
+            </div>
+
+            <div id="ctf-input-zone" class="glass-card p-6 bg-slate-900 border-2 border-slate-800 transition-all duration-700">
+    <label class="text-slate-500 font-black text-[10px] uppercase tracking-[0.2em] mb-3 block" id="label-flag">
+        <span>🚩</span> Esperando señal del código...
+    </label>
+    <input id="input-flag-ctf" type="text" placeholder="GUMI{...}" disabled
+        class="w-full bg-black/30 border-2 border-slate-800 rounded-2xl px-4 py-3 text-slate-600 font-mono outline-none transition-all cursor-not-allowed">
+    <p class="text-slate-600 text-[10px] mt-2 italic">La terminal desbloqueará este campo al triunfar.</p>
+</div>
+
+<button id="btn-terminar-mision" onclick="marcarCompletada()" disabled
+    class="w-full py-7 bg-slate-200 text-slate-400 font-black rounded-[2.5rem] flex flex-col items-center justify-center gap-1 cursor-not-allowed transition-all shadow-xl border-b-8 border-slate-300">
+    <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-3xl">auto_awesome</span>
+        RECLAMAR RECOMPENSA
+    </div>
+    <span class="text-[10px] opacity-60">Gana +{{ lesson.xp_leccion|default:"50" }} XP</span>
+</button>
+        </aside>
+    </main>
+</div>
+
+<div id="pista-container" class="fixed bottom-10 right-10 flex items-end gap-4 translate-y-20 opacity-0 transition-all duration-700 z-50 pointer-events-none">
+    <div class="bg-white p-6 rounded-[2rem] shadow-2xl border-4 border-primary/20 max-w-[250px] relative mb-12">
+        <p id="pista-texto" class="text-slate-700 font-bold text-sm italic">
+            "¿Te has quedado trabado? ¡Puedo darte una pista por -5 XP!"
+        </p>
+        <button onclick="revelarPista()" class="mt-3 bg-primary text-white text-[10px] font-black px-4 py-2 rounded-full pointer-events-auto">
+            ¡DAME LA PISTA! 💡
+        </button>
+        <div class="absolute -bottom-4 right-8 w-8 h-8 bg-white border-r-4 border-b-4 border-primary/20 rotate-45"></div>
+    </div>
+    <img src="{% static 'core/img/gumi_icon.png' %}" class="w-40 h-40 object-contain float-anim">
+</div>
+
+<style type="text/tailwindcss">
+    @layer components {
+        .glass-card { @apply bg-white/90 backdrop-blur-sm border-4 border-white shadow-xl rounded-[3rem] transition-all duration-500; }
+        .rainbow-card {
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(120deg, #ff85a1, #bae6fd, #ffeb3b, #a5d6a7, #ff85a1) border-box;
+            border: 6px solid transparent; background-size: 200% auto; animation: rainbow-border 8s linear infinite;
+        }
+    }
+    @keyframes rainbow-border { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    .terminal-error { animation: shake 0.5s both; border-color: #ef4444 !important; }
+    @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotate(2deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
+    .floating-icon { @apply absolute pointer-events-none opacity-20; animation: floatUp linear infinite; }
+    @keyframes floatUp { from { transform: translateY(110vh); } to { transform: translateY(-10vh); } }
+
+    .reliquia-preview {
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    background-size: 400%;
+    animation: rainbow-border 8s linear infinite;
+    padding: 20px;
+    border-radius: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 30px rgba(238, 43, 108, 0.3);
+}
+
+.reliquia-preview span {
+    font-variation-settings: 'FILL' 1;
+    color: white !important;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
+}
+/* Esto hace que el fondo se vea como cristal cuando sale el modal */
+.swal2-container.backdrop-blur-md {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // 1. Inicializar Ace Editor
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/tomorrow_night_eighties");
+    editor.session.setMode("ace/mode/python");
+    editor.setOptions({ 
+        fontSize: "20px", 
+        showPrintMargin: false, 
+        highlightActiveLine: true,
+        useSoftTabs: true,
+        tabSize: 4
+    });
+    editor.setReadOnly(false);
+    editor.focus();
+
+    let contadorErrores = 0;
+    let pistaRevelada = false;
+
+    // 2. Función Ejecutar (Corregida para ser más robusta)
+    async function ejecutarPython() {
+        const code = editor.getValue();
+        const outputDiv = document.getElementById('consola-output');
+        const boton = document.getElementById('boton-ejecutar');
+        
+        outputDiv.innerHTML = "🧙‍♂️ Gumi está procesando tu hechizo...";
+        boton.classList.add('opacity-50', 'pointer-events-none');
+        editor.getSession().clearAnnotations();
+
+        try {
+            const formData = new FormData();
+            formData.append('code', code);
+            formData.append('lesson_id', "{{ lesson.id }}");
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            const response = await fetch("{% url 'ejecutar_codigo' %}", {
+                method: "POST",
+                body: formData
+            });
+
+            // Si el servidor responde con error 500 o similar
+            if (!response.ok) { throw new Error('Error en el servidor'); }
+
+            const data = await response.json();
+            
+            const promptColor = data.status === 'success' ? 'text-green-400' : 'text-red-400';
+            const textColor = data.status === 'success' ? 'text-white' : 'text-red-200';
+            
+            outputDiv.innerHTML = `
+                <span class="${promptColor}">>>></span> 
+                <pre class="inline ${textColor} font-mono">${data.output || 'Sin salida.'}</pre>
+            `;
+
+            if (data.status === 'success' && data.output.includes("FLAG:")) {
+                validarExito();
+                Swal.fire({
+                    title: '¡HECHIZO CORRECTO! ✨',
+                    text: 'La flag ha aparecido en la consola. ¡Cópiala!',
+                    icon: 'success',
+                    confirmButtonColor: '#fb7185'
+                });
+            } else {
+                contadorErrores++;
+                if (contadorErrores >= 2 && !pistaRevelada) {
+                    mostrarPersonajePista(); // <--- ¡Esta función ahora sí existe abajo!
+                }
+
+                if (data.error_line) {
+                    editor.getSession().setAnnotations([{ 
+                        row: data.error_line - 1, 
+                        text: "Error aquí", 
+                        type: "error" 
+                    }]);
+                }
+            }
+
+        } catch (e) {
+            console.error(e);
+            outputDiv.innerHTML = "❌ <span class='text-red-500'>Error de conexión con el Reino.</span>";
+        } finally {
+            boton.classList.remove('opacity-50', 'pointer-events-none');
+        }
+    }
+
+    // 3. Activar Interfaz Ganadora
+    function validarExito() {
+        const ctfZone = document.getElementById('ctf-input-zone');
+        const inputFlag = document.getElementById('input-flag-ctf');
+        const btnWin = document.getElementById('btn-terminar-mision');
+        const labelFlag = document.getElementById('label-flag');
+        const checkCard = document.getElementById('check-objetivo');
+
+        ctfZone.classList.replace('border-slate-800', 'border-primary/50');
+        labelFlag.classList.replace('text-slate-500', 'text-primary');
+        labelFlag.innerHTML = '<span class="animate-pulse">🚩</span> ¡FLAG DETECTADA! ESCRÍBELA:';
+        
+        inputFlag.disabled = false;
+        inputFlag.classList.remove('bg-black/30', 'text-slate-600', 'cursor-not-allowed', 'border-slate-800');
+        inputFlag.classList.add('bg-black/60', 'text-[#13ec80]', 'border-primary', 'shadow-[0_0_15px_rgba(251,113,133,0.3)]');
+        inputFlag.focus();
+        
+        btnWin.disabled = false;
+        btnWin.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
+        btnWin.classList.add('bg-primary', 'text-white', 'cursor-pointer', 'hover:scale-105', 'active:scale-95');
+        
+        checkCard.classList.replace('bg-slate-50', 'bg-green-50');
+        document.getElementById('circulo-check').classList.replace('bg-white', 'bg-green-500');
+        
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    }
+
+    function marcarCompletada() {
+    const flagValue = document.getElementById('input-flag-ctf').value.trim();
+    
+    if (!flagValue) {
+        Swal.fire('¡Oye!', 'Debes ingresar la flag para reclamar tu XP.', 'warning');
+        return;
+    }
+
+    fetch("{% url 'completar_leccion_terminal' lesson.id %}", {
+        method: 'POST',
+        headers: { 
+            'X-CSRFToken': '{{ csrf_token }}', 
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ 
+            flag: flagValue,
+            uso_pista: pistaRevelada
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+            if (data.logro) {
+                // --- ALERTA DE LOGRO SIN FONDO NEGRO ---
+                Swal.fire({
+                    title: '¡RELIQUIA DESBLOQUEADA! 🏆',
+                    html: `
+                        <div class="flex flex-col items-center gap-4 py-4">
+                            <div class="reliquia-preview">
+                                <span class="material-symbols-outlined !text-7xl text-primary animate-pulse">
+                                    ${data.logro.icono}
+                                </span>
+                            </div>
+                            <p class="font-black text-2xl text-blue-900">${data.logro.nombre}</p>
+                            <p class="text-slate-500 italic text-center">${data.logro.mensaje}</p>
+                        </div>
+                    `,
+                    background: '#fff9fb',
+                    confirmButtonText: '¡Soy una leyenda! ✨',
+                    confirmButtonColor: '#ee2b6c',
+                    // Aquí quitamos el GIF y usamos transparencia rosa + blur
+                    backdrop: `rgba(251, 113, 133, 0.4)`, 
+                    customClass: {
+                        popup: 'rounded-[3rem] border-8 border-white shadow-2xl',
+                        container: 'backdrop-blur-md' // Esto aplica el desenfoque al fondo
+                    }
+                }).then(() => {
+                    window.location.href = "{% url 'dashboard' %}";
+                });
+            } else {
+                // Alerta normal de éxito
+                Swal.fire({
+                    title: '¡Misión Cumplida! 🏆',
+                    text: `¡Increíble! Has ganado ${data.xp_ganado} XP.`,
+                    icon: 'success',
+                    confirmButtonText: 'Regresar al Dashboard 🗺️',
+                    confirmButtonColor: '#fb7185',
+                    backdrop: `rgba(251, 113, 133, 0.4)`,
+                    customClass: {
+                        container: 'backdrop-blur-sm'
+                    }
+                }).then(() => {
+                    window.location.href = "{% url 'dashboard' %}";
+                });
+            }
+            confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+            
+        } else {
+            Swal.fire({
+                title: '¡Flag Incorrecta! ❌',
+                text: data.message,
+                icon: 'error',
+                confirmButtonColor: '#fb7185'
+            });
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        Swal.fire('Error', 'Hubo un problema al conectar con el Reino.', 'error');
+    });
+}
+
+    // 5. Lógica de Pistas (Corregida)
+    function mostrarPersonajePista() {
+        const container = document.getElementById('pista-container');
+        container.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+        container.classList.add('translate-y-0', 'opacity-100', 'pointer-events-auto');
+    }
+
+    function revelarPista() {
+        const pistaTxt = "{{ lesson.lumi_tip|escapejs }}";
+        Swal.fire({
+            title: 'Pista de Gumi 💡',
+            text: pistaTxt || "¡Revisa bien la sintaxis!",
+            icon: 'info',
+            confirmButtonColor: '#fb7185',
+            footer: '<span class="text-rose-500 font-bold">-5 XP al completar</span>'
+        });
+        pistaRevelada = true;
+        document.getElementById('pista-container').classList.add('opacity-0', 'translate-y-20');
+    }
+
+    // 6. Decoración de Estrellas
+    const bg = document.getElementById('magic-background');
+    for (let i = 0; i < 15; i++) {
+        const s = document.createElement('span');
+        s.className = 'material-symbols-outlined floating-icon';
+        s.innerText = 'star';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.animationDuration = (10 + Math.random() * 10) + 's';
+        s.style.fontSize = (10 + Math.random() * 20) + 'px';
+        bg.appendChild(s);
+    }
+</script>
+{% endblock %}

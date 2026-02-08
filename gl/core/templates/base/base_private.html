@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% block title %}Gumi & Lumi{% endblock %}</title>
+
+    <!-- Tailwind CDN (como Stitch) -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <!-- Fuente -->
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <!-- Tailwind Config ORIGINAL -->
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#4c99e6",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                        "pastel-pink": "#FCE4EC",
+                        "pastel-blue": "#E3F2FD",
+                        "pastel-green": "#E8F5E9",
+                        "pastel-yellow": "#FFFDE7",
+                        "pastelCoral": "#FFE5E0",
+                        "pastelMint": "#E8F9F2",
+                        "primary-pink": "#FF8EBC",
+                        "soft-pink": "#FFD1E3",
+                        "primary-blue": "#7BD3EA",
+                        "soft-blue": "#D1F2FB",
+                        "star-yellow": "#FFE082",
+                        "hill-green": "#A1EEBD",
+                        "primary": "#ee2b6c",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221016",
+                        "soft-pink": "#fff0f5",
+                        "soft-blue": "#e6f4f1",
+                        
+                    },
+                    
+                    fontFamily: {
+                        sans: ['Lexend', 'sans-serif'],
+                        display: ["Lexend", "sans-serif"],
+                        sans: ['Lexend', 'sans-serif'],
+                        cute: ['Fredoka', 'cursive'],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "1rem",
+                        xl: "1.5rem",
+                        full: "9999px",
+                        borderRadius: {
+                        "bubble": "2.5rem",
+                    },
+                },
+            },
+        }
+    }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24;
+        }
+        /* 1. Forzamos que todos los iconos dentro del nav estén rellenos */
+header nav .material-symbols-outlined, 
+.navbar .material-symbols-outlined {
+    font-variation-settings: 
+        'FILL' 1,   /* 1 para relleno, 0 para contorno */
+        'wght' 400, /* Grosor del icono */
+        'GRAD' 0, 
+        'opsz' 24 !important;
+}
+
+/* 2. Tu código anterior actualizado para que los bordes y fondos combinen */
+header nav a, .nav-item {
+    opacity: 1 !important;
+    font-weight: 800 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px !important;
+    border-radius: 18px !important; /* Más redondeado, más cute */
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* Colores con fondo sutil para que el icono relleno resalte más */
+header nav a:nth-child(1), .nav-inicio { color: #2563eb !important; background: #eff6ff !important; border: 2px solid #dbeafe !important; }
+header nav a:nth-child(2), .nav-cursos { color: #b45309 !important; background: #fffbeb !important; border: 2px solid #fef3c7 !important; }
+header nav a:nth-child(3), .nav-terminal { color: #be185d !important; background: #fdf2f8 !important; border: 2px solid #fce7f3 !important; }
+header nav a:nth-child(4), .nav-logros { color: #15803d !important; background: #f0fdf4 !important; border: 2px solid #dcfce7 !important; }
+header nav a:nth-child(5), .nav-chat { color: #db2777 !important; background: #fff1f2 !important; border: 2px solid #fdf2f8 !important; }
+header nav a:nth-child(6), .nav-cuenta { color: #1d4ed8 !important; background: #eff6ff !important; border: 2px solid #dbeafe !important; }
+
+/* 3. Animación de rebote en el icono al pasar el mouse */
+header nav a:hover .material-symbols-outlined {
+    transform: scale(1.2) rotate(5deg);
+    transition: transform 0.2s ease;
+}
+    </style>
+</head>
+<div class="flex h-screen">
+
+  <div class="flex-1 flex flex-col">
+    
+{% include "base/header_private.html" %}
+    <main class="flex-1 overflow-y-auto p-10">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+</div>
+<div id="custom-cursor" class="fixed w-5 h-5 bg-primary-pink/40 rounded-full pointer-events-none z-[9999] transition-transform duration-75 shadow-[0_0_15px_rgba(255,142,188,0.5)]"></div>
+<div id="cursor-dot" class="fixed w-1.5 h-1.5 bg-primary-pink rounded-full pointer-events-none z-[9999]"></div>
+
+<script>
+    const cursor = document.getElementById('custom-cursor');
+    const dot = document.getElementById('cursor-dot');
+    
+    document.addEventListener('mousemove', (e) => {
+        // Suavizado del movimiento
+        cursor.style.left = (e.clientX - 10) + 'px';
+        cursor.style.top = (e.clientY - 10) + 'px';
+        dot.style.left = (e.clientX - 3) + 'px';
+        dot.style.top = (e.clientY - 3) + 'px';
+    });
+
+    // Efecto de click
+    document.addEventListener('mousedown', () => {
+        cursor.style.transform = "scale(0.7)";
+        cursor.style.backgroundColor = "rgba(123, 211, 234, 0.6)"; // Cambia a azul al clickear
+    });
+    document.addEventListener('mouseup', () => {
+        cursor.style.transform = "scale(1)";
+        cursor.style.backgroundColor = "rgba(255, 142, 188, 0.4)";
+    });
+
+    // Ocultar cursor nativo en toda la página
+    document.body.style.cursor = 'none';
+    
+    // Hacer que el cursor reaccione a las medallas
+    document.querySelectorAll('.medal-card, .shake-hover').forEach(item => {
+        item.addEventListener('mouseenter', () => {
+            cursor.style.transform = "scale(2.5)";
+            cursor.style.border = "2px solid #FF8EBC";
+            cursor.style.backgroundColor = "transparent";
+        });
+        item.addEventListener('mouseleave', () => {
+            cursor.style.transform = "scale(1)";
+            cursor.style.border = "none";
+            cursor.style.backgroundColor = "rgba(255, 142, 188, 0.4)";
+        });
+    });
+</script>
+</body>
+</html>

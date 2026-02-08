@@ -1,0 +1,229 @@
+{% extends 'base/base_private.html' %}
+{% load static %}
+
+{% block title %}Misión de Práctica | Gumi & Lumi{% endblock %}
+
+{% block content %}
+<div class="bg-[#fff9fb] min-h-screen relative overflow-hidden p-4 md:p-8">
+    
+    <div id="magic-background" class="fixed inset-0 pointer-events-none z-0"></div>
+
+    <main class="relative z-10 max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <div class="lg:col-span-8 space-y-8">
+            
+            <div class="rainbow-card rounded-[2.5rem] p-6 bg-white shadow-xl flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="bg-primary/10 text-primary p-3 rounded-2xl">
+                        <span class="material-symbols-outlined text-3xl font-variation-fill">terminal</span>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Laboratorio de Hechizos</p>
+                        <h2 class="text-3xl font-black text-slate-800">
+                            {% if lesson.id %} Practicando: {{ lesson.title }} {% else %} Práctica Libre {% endif %}
+                        </h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card bg-[#1e293b] rounded-[3rem] p-8 shadow-2xl border-[10px] border-slate-800 flex flex-col min-h-[500px] relative">
+                <div class="flex items-center gap-2 mb-6 border-b border-slate-700/50 pb-4">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                    <span class="text-slate-500 text-xs font-mono ml-4 italic flex items-center gap-2">
+                        <span class="material-symbols-outlined text-sm">magic_button</span> practica.py
+                    </span>
+                </div>
+
+                <div id="editor" class="flex-1 text-2xl rounded-xl" style="height: 300px;">print("¡Hola Gumi!")</div>
+                
+                <div class="mt-6 p-6 bg-black/30 rounded-3xl border border-slate-700/30">
+                    <div id="consola-output" class="text-slate-300 font-mono text-xl min-h-[1.5em]">
+                        <span class="text-primary animate-pulse">>>></span> 
+                        <span class="opacity-70 italic">Esperando tu magia...</span>
+                    </div>
+                </div>
+
+                <div class="absolute -right-12 -bottom-10 hidden xl:block pointer-events-none">
+                    <img src="{% static 'core/img/gumi_laptop.png' %}" class="w-48 h-48 object-contain float-anim drop-shadow-2xl">
+                </div>
+            </div>
+
+            <button id="boton-ejecutar" onclick="ejecutarPython()" 
+                class="w-full h-24 bg-primary hover:brightness-110 active:scale-95 transition-all rounded-[2.5rem] shadow-[0_12px_0_0_#0bb561] flex items-center justify-center gap-4 disabled:opacity-50">
+                <span id="icono-boton" class="material-symbols-outlined !text-5xl text-white">bolt</span>
+                <span id="boton-texto" class="text-3xl font-black text-white uppercase italic tracking-tighter">¡LANZAR HECHIZO!</span>
+            </button>
+        </div>
+
+        <aside class="lg:col-span-4 space-y-6">
+            
+            <div class="glass-card p-8 border-b-8 border-indigo-100">
+                <h3 class="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary font-variation-fill">target</span>
+                    Tu Misión
+                </h3>
+                <div class="space-y-4">
+                    <div class="p-5 rounded-[2rem] bg-slate-50 border-2 border-slate-100">
+                        <p id="instruccion-texto" class="text-slate-600 font-bold leading-tight text-sm uppercase">
+                            {% if lesson.objetivo_1 %}
+                                1. {{ lesson.objetivo_1 }}
+                            {% else %}
+                                ¡Escribe lo que quieras y explora el poder de Python!
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-8 bg-slate-900 border-b-8 border-slate-950">
+                <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary font-variation-fill">auto_stories</span>
+                    Manual
+                </h3>
+                <div class="space-y-3">
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700">
+                        <code class="text-primary font-bold">print("Hola")</code>
+                        <p class="text-slate-400 text-[10px] mt-1 italic">Muestra un mensaje en consola.</p>
+                    </div>
+                    <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700">
+                        <code class="text-primary font-bold">color = "Rosa"</code>
+                        <p class="text-slate-400 text-[10px] mt-1 italic">Guarda palabras en variables.</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="btn-terminar-mision" onclick="marcarCompletada()" disabled
+                class="w-full py-7 bg-slate-200 text-slate-400 font-black rounded-[2.5rem] flex flex-col items-center justify-center gap-1 cursor-not-allowed transition-all shadow-xl border-b-8 border-slate-300">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-3xl">emoji_events</span>
+                    RECLAMAR VICTORIA
+                </div>
+            </button>
+        </aside>
+    </main>
+</div>
+
+<style type="text/tailwindcss">
+    @layer components {
+        .glass-card { @apply bg-white/90 backdrop-blur-sm border-4 border-white shadow-xl rounded-[3rem] transition-all duration-500; }
+        .rainbow-card {
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(120deg, #ff85a1, #bae6fd, #ffeb3b, #a5d6a7, #ff85a1) border-box;
+            border: 6px solid transparent; background-size: 200% auto; animation: rainbow-border 8s linear infinite;
+        }
+    }
+    @keyframes rainbow-border { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    .float-anim { animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotate(2deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
+    .floating-icon { @apply absolute pointer-events-none opacity-20; animation: floatUp linear infinite; }
+    @keyframes floatUp { from { transform: translateY(110vh); } to { transform: translateY(-10vh); } }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.2/ace.js"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // 1. Inicializar Ace Editor (Súper pro)
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/tomorrow_night_eighties");
+    editor.session.setMode("ace/mode/python");
+    editor.setOptions({ fontSize: "20px", showPrintMargin: false, highlightActiveLine: true });
+
+    let pyodide;
+    
+    // 2. Cargar Motor Python
+    async function initPython() {
+        const btnTxt = document.getElementById('boton-texto');
+        const btnIcon = document.getElementById('icono-boton');
+        try {
+            pyodide = await loadPyodide();
+            btnTxt.innerText = "¡LANZAR HECHIZO!";
+            btnIcon.innerText = "bolt";
+            btnIcon.classList.remove('animate-spin');
+        } catch (e) { btnTxt.innerText = "Error al cargar"; }
+    }
+    initPython();
+
+    // 3. Ejecutar Código
+    async function ejecutarPython() {
+        const code = editor.getValue();
+        const outputDiv = document.getElementById('consola-output');
+        outputDiv.innerHTML = "🧙‍♂️ Gumi está procesando...";
+
+        try {
+            // Ejecución local con Pyodide
+            await pyodide.runPythonAsync(`
+                import sys, io
+                sys.stdout = io.StringIO()
+            `);
+            await pyodide.runPythonAsync(code);
+            const stdout = pyodide.runPython("sys.stdout.getvalue()");
+            
+            outputDiv.innerHTML = `<span class="text-green-400">>>></span> <pre class="inline text-white">${stdout || 'Hechizo lanzado con éxito.'}</pre>`;
+            
+            // Validar si cumplió la meta
+            validarMeta(code);
+
+        } catch (err) {
+            outputDiv.innerHTML = `<span class="text-red-400">>>> Error:</span> <pre class="inline text-red-200">${err.message.split('File "<exec>"')[0]}</pre>`;
+        }
+    }
+
+    function validarMeta(codigo) {
+        const meta = "{{ lesson.codigo_meta|escapejs }}";
+        const btnWin = document.getElementById('btn-terminar-mision');
+        
+        if (meta && codigo.toLowerCase().includes(meta.toLowerCase())) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            btnWin.disabled = false;
+            btnWin.classList.replace('bg-slate-200', 'bg-primary');
+            btnWin.classList.replace('text-slate-400', 'text-white');
+            btnWin.classList.replace('cursor-not-allowed', 'cursor-pointer');
+            btnWin.classList.add('animate-bounce');
+        }
+    }
+
+    function marcarCompletada() {
+        const lid = "{{ lesson.id }}";
+        if (!lid || lid === "None") {
+            Swal.fire('¡Modo Libre!', 'Aquí puedes practicar cuanto quieras.', 'info');
+            return;
+        }
+
+        // Llamamos a la misma vista de completar para ganar XP y Logros
+        const urlFinal = "{% url 'completar_leccion_terminal' 0 %}".replace('0', lid);
+        
+        fetch(urlFinal, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': '{{ csrf_token }}', 'Content-Type': 'application/json' },
+            body: JSON.stringify({ flag: "{{ lesson.flag_secreta }}", uso_pista: false })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                Swal.fire({
+                    title: '¡Reto Superado! 🏆',
+                    text: `Ganaste ${data.xp_ganado} XP`,
+                    icon: 'success',
+                    confirmButtonColor: '#ee2b6c'
+                }).then(() => window.location.href = "{% url 'dashboard' %}");
+            }
+        });
+    }
+
+    // Estrellitas de fondo
+    const bg = document.getElementById('magic-background');
+    for (let i = 0; i < 15; i++) {
+        const s = document.createElement('span');
+        s.className = 'material-symbols-outlined floating-icon text-primary';
+        s.innerText = 'star';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.animationDuration = (10 + Math.random() * 10) + 's';
+        bg.appendChild(s);
+    }
+</script>
+{% endblock %}
